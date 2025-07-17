@@ -105,6 +105,18 @@ public class Grid {
         return newUnit;
     }
 
+    public void removeUnit(Units unit) {
+        if (unit != null) {
+            // حذف واحد از لیست واحدها
+            units.remove(unit);
+            // حذف واحد از بلوک مربوطه
+            Blocks block = getBlock(unit.getPosition());
+            if (block != null) {
+                block.removeUnit();
+            }
+        }
+    }
+
     public Blocks getBlock(int x, int y) {
         if (isValidPosition(x, y))
             return blocks[x][y];

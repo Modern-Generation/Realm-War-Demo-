@@ -186,7 +186,7 @@ public class GameController {
         System.out.println("Structures: " + player.getStructures().size());
     }
 
-    void nextTurn() {
+    public void nextTurn() {
         currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
     }
 

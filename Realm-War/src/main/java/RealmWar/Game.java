@@ -165,13 +165,13 @@ public class Game {
         return gc.isGameOver();
     }
 
-//    public Grid getGrid() {
-//        return grid;
-//    }
-//
-//    public List<Player> getPlayers() {
-//        return players;
-//    }
+    public Grid getGrid() {
+        return grid;
+    }
+
+    public List<Player> getPlayers() {
+        return players;
+    }
 
     // --- Save game state to JSON file ---
     public void saveGame(String filePath) {
