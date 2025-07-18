@@ -97,19 +97,14 @@ public class Main {
     }
 
     private static void loadGame() {
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Select Saved Game File");
-
-        if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
             try {
                 currentGame = new Game(new ArrayList<>(), Config.GRID_WIDTH, Config.GRID_HEIGHT);
-                currentGame = currentGame.loadGame(fileChooser.getSelectedFile().getPath());
+                currentGame = currentGame.loadGame("saves/quicksave.json");
 
                 currentGameController = new GameController(
                         currentGame.getPlayers(),
                         currentGame.getGrid(),
                         new Scanner(System.in));
-
                 currentGameController.setCurrentPlayerIndex(currentGame.getCurrentPlayerIndex());
 
                 JOptionPane.showMessageDialog(null,
@@ -124,9 +119,6 @@ public class Main {
                         "Error",
                         JOptionPane.ERROR_MESSAGE);
                 showMainMenu();
-            }
-        } else {
-            showMainMenu();
         }
     }
 
