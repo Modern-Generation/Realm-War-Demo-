@@ -1,5 +1,6 @@
 package RealmWar;
 
+import GUI.GameGUI;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -32,6 +33,9 @@ public class Game {
     private Grid grid;
     private boolean isGameOver;
     private GameController gc;
+    private long turnStartTime;
+    private static final int TURN_DURATION = 30;
+    private int remainingTurnTime = 30;
 
     public Game(List<Player> playerNames, int width, int height) {
         this.players = new ArrayList<>();
@@ -49,21 +53,47 @@ public class Game {
         return gc;
     }
 
+
+    public int getRemainingTurnTime() {
+        return remainingTurnTime;
+    }
+
     public void startTurnTimer() {
         scheduler = Executors.newScheduledThreadPool(2);
+
+        // تایمر نوبت بازی
         turnTask = scheduler.scheduleAtFixedRate(() -> {
-                    nextPlayerTurn();
-                },
-                0, turnDuration, TimeUnit.SECONDS);
+            remainingTurnTime--;
+            if (remainingTurnTime <= 0) {
+                nextPlayerTurn();
+                remainingTurnTime = 30; // ریست تایمر برای بازیکن بعدی
+            }
+        }, 1, 1, TimeUnit.SECONDS);
+
+        // تایمر جمع‌آوری منابع
         resourcesTask = scheduler.scheduleAtFixedRate(() -> {
             for (Player p : players) {
                 if (!p.isDefeated()) {
-                    p.collectResources();
-                    System.out.println(p.getName() + " has collected resources");
+                    int goldGain = grid.valueOfGoldPerTurn(p);
+                    int foodGain = grid.valueOfFoodPerTurn(p);
+                    p.addGold(goldGain);
+                    p.addFood(foodGain);
+                    System.out.println(p.getName() + " gained " + goldGain + " gold and " + foodGain + " food");
+
+                    // اگر GUI دارید، اینجا می‌توانید رویداد به‌روزرسانی GUI را فراخوانی کنید
+                    if (gc.getGui() != null) {
+                        gc.getGui().showResourceGain(goldGain, foodGain);
+                    }
                 }
             }
         }, 0, 3, TimeUnit.SECONDS);
     }
+
+   /* public int getRemainingTurnTime() {
+        if (turnStartTime == 0) return TURN_DURATION; // اگر تایمر شروع نشده، زمان کامل را برگردان
+        long elapsed = System.currentTimeMillis() - turnStartTime;
+        return Math.max(0, TURN_DURATION - (int)(elapsed / 1000));
+    }*/
 
     public void stopTurnTimer() {
         if (turnTask != null) {
@@ -95,7 +125,7 @@ public class Game {
             startingBlock.setOwner(player);
             player.addOwnedBlock(startingBlock);
 
-            //Own surrounding blocks
+//Own surrounding blocks
             for (Position p : grid.getAdjacentPositions(startingPos)) {
                 Blocks adjacent = grid.getBlock(p);
                 if (adjacent != null && adjacent.getOwner() == null) {
@@ -125,6 +155,8 @@ public class Game {
     }
 
     public void nextPlayerTurn() {
+        turnStartTime = System.currentTimeMillis(); // زمان شروع نوبت جدید
+
         int attempts = 0;
         do {
             nowPlayerIndex = (nowPlayerIndex + 1) % players.size();
@@ -174,7 +206,7 @@ public class Game {
     }
 
     // --- Save game state to JSON file ---
-    public void saveGame(String filePath) {
+   /* public void saveGame(String filePath) {
         try (FileWriter writer = new FileWriter(filePath)) {
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             JsonObject gameData = new JsonObject();
@@ -196,6 +228,28 @@ public class Game {
             e.printStackTrace();
             System.err.println("Failed to save game." + e.getMessage());
         }
+    }*/
+    public void saveGame(String filePath) {
+        try (FileWriter writer = new FileWriter(filePath)) {
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            JsonObject gameData = new JsonObject();
+
+            // ذخیره اطلاعات بازیکنان
+            JsonElement playersJson = gson.toJsonTree(players);
+            gameData.add("players", playersJson);
+
+            // ذخیره وضعیت زمین بازی
+            JsonElement gridJson = gson.toJsonTree(grid);
+            gameData.add("grid", gridJson);
+
+// ذخیره نوبت فعلی
+            gameData.addProperty("currentPlayerIndex", gc.getCurrentPlayerIndex());
+
+            gson.toJson(gameData, writer);
+            System.out.println("بازی با موفقیت در " + filePath + " ذخیره شد");
+        } catch (IOException e) {
+            System.err.println("خطا در ذخیره بازی: " + e.getMessage());
+        }
     }
 
     // --- Load game state from JSON file ---
@@ -215,9 +269,10 @@ public class Game {
             Game newGame = new Game(newPlayers, loadedGrid.getWidth(), loadedGrid.getHeight());
             newGame.grid = loadedGrid;
             newGame.players = newPlayers;
-
-            int currentPlayerIndex = gameData.get("CurrentPlayer").getAsInt();
+            int currentPlayerIndex = gameData.get("CurrentPlayerIndex").getAsInt();
             newGame.gc.setCurrentPlayerIndex(currentPlayerIndex);
+            fixOwners(newGame);
+
             return newGame;
         } catch (IOException e) {
             e.printStackTrace();
@@ -239,4 +294,47 @@ public class Game {
         initGameBoard();
         System.out.println("Game restarted.");
     }
+    public int getCurrentPlayerIndex() {
+        return this.nowPlayerIndex;
+    }
+
+    private void fixOwners(Game game) {
+        for (Player player : game.getPlayers()) {
+            player.getOwnedBlocks().clear();
+            player.getUnits().clear();
+            player.getStructures().clear();
+        }
+
+        for (int x = 0; x < game.getGrid().getWidth(); x++) {
+            for (int y = 0; y < game.getGrid().getHeight(); y++) {
+                Blocks block = game.getGrid().getBlock(x, y);
+                Player owner = block.getOwner();
+                if (owner != null) {
+                    owner.addOwnedBlock(block);
+
+                    // ساختارها
+                    Structures structure = block.getStructure();
+                    if (structure != null) {
+                        structure.setOwner(owner);
+                        owner.getStructures().add(structure);
+                    }
+
+                    // یونیت‌ها
+                    Units unit = block.getUnit();
+                    if (unit != null) {
+                        unit.setOwner(owner);
+                        owner.getUnits().add(unit);
+                    }
+                }
+            }
+        }
+
+        // همچنین ممکنه یونیت‌هایی که داخل grid.units هستند هم باید بررسی شوند اگر در بلوک‌ها نیستند
+        for (Units unit : game.getGrid().getAllUnits()) {
+            if (unit.getOwner() != null && !unit.getOwner().getUnits().contains(unit)) {
+                unit.getOwner().getUnits().add(unit);
+            }
+        }
+    }
+
 }

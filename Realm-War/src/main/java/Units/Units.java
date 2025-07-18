@@ -14,7 +14,7 @@ public abstract class Units {
     protected int ration;
     protected int unitSpace;
     protected int level;
-    protected Player owner;
+    protected transient Player owner;
     protected Position position;
 
     public Units(Player owner, Position position) {
@@ -45,6 +45,10 @@ public abstract class Units {
 
     public int getHitPoints() {
         return hitPoints;
+    }
+
+    public void setOwner(Player owner) {
+        this.owner = owner;
     }
 
     public int getAttackPower() {

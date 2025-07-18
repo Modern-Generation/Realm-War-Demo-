@@ -1,5 +1,6 @@
 package RealmWar;
 
+import GUI.GameGUI;
 import Grid.*;
 import Structures.TownHall;
 import Units.*;
@@ -13,6 +14,8 @@ public class GameController {
     private Grid grid;
     private int currentPlayerIndex = 0;
     private Scanner scanner;
+    private GameGUI gui;
+
 
     public GameController(List<Player> players, Grid grid, Scanner scanner) {
         this.players = players;
@@ -213,5 +216,14 @@ public class GameController {
 
     public Player getWinner() {
         return players.stream().filter(p -> !p.isDefeated()).findFirst().orElse(null);
+    }
+
+
+    public void setGui(GameGUI gui) {
+        this.gui = gui;
+    }
+
+    public GameGUI getGui() {
+        return gui;
     }
 }

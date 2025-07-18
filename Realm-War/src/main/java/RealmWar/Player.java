@@ -1,10 +1,12 @@
 package RealmWar;
 
+import GUI.GameGUI;
 import Structures.Structures;
 import Structures.TownHall;
 import Units.Units;
 import Blocks.*;
 
+import javax.swing.*;
 import java.util.*;
 
 public class Player {
@@ -16,8 +18,9 @@ public class Player {
     private int maxUnitSpace;
     private List<Units> units;
     private List<Structures> structures;
-    private Set<Blocks> ownedBlocks;
+    private transient Set<Blocks> ownedBlocks;
     private boolean isDefeated = false;
+
 
     public Player(String name, int id) {
         this.name = name;
@@ -176,6 +179,7 @@ public class Player {
         }
         if (gold < 0) gold = 0;
         if (food < 0) food = 0;
+
     }
 
     public boolean spendResources(int goldCost, int foodCost) {
@@ -203,4 +207,13 @@ public class Player {
     public boolean canAfford(int goldCost, int foodCost) {
         return gold >= goldCost && food >= foodCost;
     }
+
+    public void addGold(int amount) {
+        this.gold += amount;
+    }
+
+    public void addFood(int amount) {
+        this.food += amount;
+    }
+
 }

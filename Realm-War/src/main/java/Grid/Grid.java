@@ -123,6 +123,17 @@ public class Grid {
         return null;
     }
 
+    public List<Blocks> getAllBlocks() {
+        List<Blocks> allBlocks = new ArrayList<>();
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                allBlocks.add(blocks[x][y]);
+            }
+        }
+        return allBlocks;
+    }
+
+
     public List<Units> getUnitsOwnedBy(Player player) {
         return units.stream().filter(u -> u.getOwner().equals(player)).toList();
     }

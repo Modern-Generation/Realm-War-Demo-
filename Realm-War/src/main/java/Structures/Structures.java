@@ -8,7 +8,7 @@ public abstract class Structures {
     protected int maintenanceCost;
     protected int maxLevel;
     protected int currentLevel;
-    protected Player owner;
+    protected transient Player owner;
 
     public Structures(int durability, int maintenanceCost, int maxLevel) {
         this.durability = durability;

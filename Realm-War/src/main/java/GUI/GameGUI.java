@@ -11,8 +11,12 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.List;
 import java.util.Scanner;
+import java.io.File;
+import javax.swing.JOptionPane;
+
 
 public class GameGUI extends JFrame {
+    private final JPanel controlPanel;
     private Game game;
     private GameController gameController;
     private JPanel gameBoard;
@@ -27,10 +31,15 @@ public class GameGUI extends JFrame {
     private JButton moveButton;
     private Position selectedPosition;
     private JDialog actionDialog;
+    //   private Game game;
+    private GameController gc;
+
 
     public GameGUI(Game game, GameController gameController) {
+        this.gc = gc;
         this.game = game;
         this.gameController = gameController;
+        controlPanel = new JPanel();
         initializeUI();
     }
 
@@ -81,9 +90,51 @@ public class GameGUI extends JFrame {
 
         add(gameBoard, BorderLayout.CENTER);
         add(infoPanel, BorderLayout.EAST);
+        this.add(controlPanel, BorderLayout.SOUTH);
+
+        JLabel turnTimerLabel;
+
+// در بخش تنظیمات infoPanel:
+        turnTimerLabel = new JLabel("Time left: 30s");
+        infoPanel.add(turnTimerLabel);
+
+// یک تایمر برای آپدیت زمان باقی‌مانده:
+        Timer guiTimer = new Timer(1000, e -> {
+            int remainingTime = game.getRemainingTurnTime(); // نیاز به اضافه کردن متد getRemainingTurnTime() در کلاس Game
+            turnTimerLabel.setText("Time left: " + remainingTime + "s");
+        });
+        guiTimer.start();
 
         updateGameInfo();
         setVisible(true);
+        // در کلاس GameGUI
+        JButton quickSaveBtn = new JButton("Save Game");
+        quickSaveBtn.addActionListener(e -> {
+            try {
+                // ذخیره در پوشه saves در مسیر برنامه
+                new File("saves").mkdirs(); // ایجاد پوشه اگر وجود ندارد
+                String savePath = "saves/quicksave.json";
+                game.saveGame(savePath); // استفاده از متغیر game که باید در کلاس تعریف شده باشد
+
+                JOptionPane.showMessageDialog(GameGUI.this,
+                        "بازی با موفقیت ذخیره شد!\nمسیر: " + savePath,
+                        "Save Game",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(GameGUI.this,
+                        "خطا در ذخیره بازی: " + ex.getMessage(),
+                        "خطا",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+// اضافه کردن به پنل کنترل (مطمئن شوید controlPanel وجود دارد)
+        if (controlPanel != null) {
+            controlPanel.add(quickSaveBtn);
+        } else {
+            System.err.println("خطا: controlPanel مقداردهی نشده است");
+        }
+
     }
 
     private void initializeGameBoard() {
@@ -139,6 +190,7 @@ public class GameGUI extends JFrame {
                     .append(" HP").append(block.getUnit().getHitPoints());
         }
         cell.setText(text.toString());
+
     }
 
     private void handleCellClick(int x, int y) {
@@ -150,6 +202,7 @@ public class GameGUI extends JFrame {
         } else {
             JOptionPane.showMessageDialog(this, "This block is not yours!", "Error", JOptionPane.ERROR_MESSAGE);
         }
+
     }
 
     private void showBlockActions(Blocks block) {
@@ -288,6 +341,7 @@ public class GameGUI extends JFrame {
         dialog.pack();
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
+
     }
 
     private void trainUnit(Units unit) {
@@ -398,6 +452,7 @@ public class GameGUI extends JFrame {
         dialog.pack();
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
+
     }
 
     private void upgradeStructure(Structures structure) {
@@ -424,7 +479,7 @@ public class GameGUI extends JFrame {
         selectedPosition = null;
     }
 
-    private void updateGameInfo() {
+    public void updateGameInfo() {
         Player currentPlayer = gameController.getCurrentPlayer();
         currentPlayerLabel.setText("Player: " + currentPlayer.getName());
         goldLabel.setText("Gold: " + currentPlayer.getGold());
@@ -434,13 +489,15 @@ public class GameGUI extends JFrame {
 
         // Highlight current player's blocks
         updateGameBoard();
+
     }
 
-    private void updateGameBoard() {
+    public void updateGameBoard() {
         initializeGameBoard();
     }
 
     public static void main(String[] args) {
+
         SwingUtilities.invokeLater(() -> {
             // Initialize game with 2 players for testing
             List<Player> players = List.of(
@@ -454,4 +511,24 @@ public class GameGUI extends JFrame {
             new GameGUI(game, gc);
         });
     }
+
+    public void showResourceGain(int gold, int food) {
+        JLabel gainLabel = new JLabel("+" + gold + " Gold, +" + food + " Food");
+        gainLabel.setForeground(Color.GREEN);
+        gainLabel.setFont(new Font("Arial", Font.BOLD, 14));
+
+        // نمایش موقت پیام
+        JPanel messagePanel = new JPanel();
+        messagePanel.add(gainLabel);
+
+        JOptionPane optionPane = new JOptionPane(messagePanel, JOptionPane.INFORMATION_MESSAGE);
+        JDialog dialog = optionPane.createDialog("Resources Gained");
+        dialog.setModal(false);
+        dialog.setVisible(true);
+
+        new Timer(2000, e -> {
+            dialog.dispose();
+        }).start();
+    }
+
 }

@@ -1,189 +1,190 @@
 package RealmWar;
 
-import Blocks.Blocks;
-import Grid.Grid;
-import Grid.Position;
+import GUI.GameGUI;
+import Grid.*;
 import Structures.*;
 import Units.*;
-import com.google.gson.internal.bind.util.ISO8601Utils;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.*;
+import javax.swing.*;
 
 public class Main {
-    private static ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+    private static Game currentGame;
+    private static GameController currentGameController;
 
     public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
+        SwingUtilities.invokeLater(() -> {
+            showMainMenu();
+        });
+    }
+
+    private static void showMainMenu() {
+        JFrame menuFrame = new JFrame("Realm War - Main Menu");
+        menuFrame.setSize(400, 300);
+        menuFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        menuFrame.setLocationRelativeTo(null);
+
+        JPanel panel = new JPanel(new GridLayout(4, 1, 10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        JButton newGameBtn = new JButton("New Game");
+        JButton loadGameBtn = new JButton("Load Game");
+        JButton exitBtn = new JButton("Exit");
+
+        // Button styling
+        Font btnFont = new Font("Tahoma", Font.BOLD, 16);
+        newGameBtn.setFont(btnFont);
+        loadGameBtn.setFont(btnFont);
+        exitBtn.setFont(btnFont);
+
+        newGameBtn.addActionListener(e -> {
+            menuFrame.dispose();
+            setupNewGame();
+        });
+
+        loadGameBtn.addActionListener(e -> {
+            menuFrame.dispose();
+            loadGame();
+        });
+
+        exitBtn.addActionListener(e -> {
+            System.exit(0);
+        });
+
+        panel.add(newGameBtn);
+        panel.add(loadGameBtn);
+        panel.add(exitBtn);
+
+        menuFrame.add(panel);
+        menuFrame.setVisible(true);
+    }
+
+    private static void setupNewGame() {
+        // Get number of players
+        String[] options = {"2 Players", "3 Players", "4 Players"};
+        int playerCount = JOptionPane.showOptionDialog(null,
+                "Select number of players:",
+                "Game Settings",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[0]) + 2;
+
+        // Get player names
         List<Player> players = new ArrayList<>();
-        System.out.println("Enter the number of players: ");
-        int n = sc.nextInt();
-        sc.nextLine();
-        for (int i = 1; i <= n; i++) {
-            System.out.println("Enter name for player " + i + ": ");
-            String name = sc.nextLine().trim();
-            players.add(new Player(name, i));
-        }
-        Game game = new Game(players, Config.GRID_WIDTH, Config.GRID_HEIGHT);
-        Grid grid = new Grid(Config.GRID_WIDTH, Config.GRID_HEIGHT);
-        GameController gc = new GameController(players, grid, sc);
-        scheduler.scheduleAtFixedRate(() -> {
-            if (!gc.isGameOver()) {
-                Player currentPlayer = gc.getCurrentPlayer();
-                System.out.println(currentPlayer.getName() + "'s turn!");
-                currentPlayer.startTurn();
+        for (int i = 1; i <= playerCount; i++) {
+            String name = JOptionPane.showInputDialog(null,
+                    "Enter name for Player " + i + ":",
+                    "Player Names",
+                    JOptionPane.PLAIN_MESSAGE);
 
-                //Time out Warning
-                scheduler.schedule(() -> {
-                    System.out.println("\n⚠ 5 Seconds Remaining!");
-                }, 25, TimeUnit.SECONDS);
-
-                handleTurn(currentPlayer, game, gc);
-                gc.removeDeadUnits();
-                gc.checkPlayerDefeat();
-                gc.nextTurn();
-            } else {
-                Player winner = gc.getWinner();
-                System.out.println("\n===Game over!===");
-                System.out.println("Winner is: " + (winner != null ? winner.getName() : "Nobody"));
-                scheduler.shutdown();
+            if (name == null || name.trim().isEmpty()) {
+                name = "Player " + i;
             }
-        }, 0, 30, TimeUnit.SECONDS);
+            players.add(new Player(name.trim(), i));
+        }
+
+        // Create new game
+        currentGame = new Game(players, Config.GRID_WIDTH, Config.GRID_HEIGHT);
+        currentGameController = new GameController(players, currentGame.getGrid(), new Scanner(System.in));
+
+        // Show in-game menu options
+        showInGameMenu();
     }
 
-    private static void handleTurn(Player currentPlayer, Game game, GameController gc) {
-        Scanner scanner = new Scanner(System.in);
-        long startTime = System.currentTimeMillis();
-        while (System.currentTimeMillis() - startTime < 30 * 1000L) {
-            System.out.println("\nIt's " + currentPlayer.getName() + "'s turn");
-            gc.showPlayerInfo(currentPlayer);
-            System.out.println("1. Build Structure");
-            System.out.println("2. Train Unit");
-            System.out.println("3. Move Unit");
-            System.out.println("4. Save Game");
-            System.out.println("5. Load Game");
-            System.out.println("6. ReStart Game");
-            System.out.print("Choose an option: ");
-            int option = scanner.nextInt();
-            scanner.nextLine();
+    private static void loadGame() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Select Saved Game File");
 
-            switch (option) {
-                case 1:
-                    buildStructure(currentPlayer, scanner);
-                    break;
-                case 2:
-                    gc.handleTrainUnit(currentPlayer);
-                    break;
-                case 3:
-                    gc.handleMoveUnit(currentPlayer);
-                case 4:
-                    game.saveGame("savingGameFile.json");
-                    System.out.println("Game saved!");
-                    break;
-                case 5:
-                    game = game.loadGame("savingGameFile.json");
-                    game.stopTurnTimer();
-                    game.startTurnTimer();
-                    System.out.println("Game loaded!");
-                    break;
-                case 6:
-                    game.restartGame();
-                    game.stopTurnTimer();
-                    game.startTurnTimer();
-                    System.out.println("Game restarted!");
-                default:
-                    System.out.println("Invalid or delayed option! Waiting for next turn...");
+        if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+            try {
+                currentGame = new Game(new ArrayList<>(), Config.GRID_WIDTH, Config.GRID_HEIGHT);
+                currentGame = currentGame.loadGame(fileChooser.getSelectedFile().getPath());
+
+                currentGameController = new GameController(
+                        currentGame.getPlayers(),
+                        currentGame.getGrid(),
+                        new Scanner(System.in));
+
+                currentGameController.setCurrentPlayerIndex(currentGame.getCurrentPlayerIndex());
+
+                JOptionPane.showMessageDialog(null,
+                        "Game loaded successfully!",
+                        "Load Game",
+                        JOptionPane.INFORMATION_MESSAGE);
+
+                showInGameMenu();
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null,
+                        "Error loading game: " + ex.getMessage(),
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                showMainMenu();
             }
-            if (System.currentTimeMillis() - startTime >= 30 * 1000L)
-                break;
-        }
-        System.out.println("Turn Ended for " + currentPlayer.getName() + "!");
-    }
-
-    private static void buildStructure(Player player, Scanner scanner) {
-        System.out.println("Available structures to build:");
-        System.out.println("1. Town Hall");
-        System.out.println("2. Tower");
-        System.out.print("Choose structure to build: ");
-        int choice = scanner.nextInt();
-        scanner.nextLine();
-
-        Structures structure = null;
-        switch (choice) {
-            case 1:
-                structure = new TownHall(player);
-                break;
-            case 2:
-                structure = new Tower(player);
-                break;
-            default:
-                System.out.println("Invalid choice.");
-                return;
-        }
-        System.out.println("Position X to build:");
-        int x = scanner.nextInt();
-        System.out.println("Position Y to build:");
-        int y = scanner.nextInt();
-        scanner.nextLine();
-
-        Blocks block = player.getOwnedBlocks().stream().filter(b ->
-                b.getPosition().getX() == x && b.getPosition().getY() == y).findFirst().orElse(null);
-
-        if (block == null || !block.canBuildStructure()) {
-            System.out.println("Can't build structure here!");
-            return;
-        }
-
-        if (player.addStructure(structure)) {
-            block.setStructure(structure);
-            System.out.println(structure.getClass().getSimpleName() + " built!");
         } else {
-            System.out.println("Not enough resources to build.");
+            showMainMenu();
         }
     }
 
-    private static void trainUnit(Player player, Grid grid, Scanner scanner) {
-        System.out.println("Available units to train:");
-        System.out.println("1. Peasant");
-        System.out.println("2. SpearMan");
-        System.out.println("3. SwordMan");
-        System.out.println("4. Knight");
-        System.out.print("Choose unit to train: ");
-        int choice = scanner.nextInt();
-        scanner.nextLine();
+    private static void showInGameMenu() {
+        GameGUI gui = new GameGUI(currentGame, currentGameController);
+        currentGameController.setGui(gui);
 
-        System.out.println("First enter your coordinate:");
-        System.out.print("X: ");
-        int x = scanner.nextInt();
-        System.out.println(" Y: ");
-        int y = scanner.nextInt();
-        scanner.nextLine();
-        Position position = new Position(x, y);
+        // Add game menu
+        JMenuBar menuBar = new JMenuBar();
 
-        Units unit;
-        switch (choice) {
-            case 1:
-                unit = new Peasant(player, position);
-                break;
-            case 2:
-                unit = new SpearMan(player, position);
-                break;
-            case 3:
-                unit = new SwordMan(player, position);
-                break;
-            case 4:
-                unit = new Knight(player, position);
-                break;
-            default:
-                System.out.println("Invalid choice.");
-                return;
-        }
+        // Game menu
+        JMenu gameMenu = new JMenu("Game");
+        JMenuItem saveItem = new JMenuItem("Save Game");
+        JMenuItem mainMenuItem = new JMenuItem("Return to Main Menu");
+        JMenuItem exitItem = new JMenuItem("Exit");
 
-        if (player.addUnit(unit)) {
-            grid.addUnit(unit);
-            System.out.println(unit.getClass().getSimpleName() + " trained!");
-        } else {
-            System.out.println("Not enough resources or unit space.");
-        }
+        saveItem.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Save Game");
+
+            if (fileChooser.showSaveDialog(gui) == JFileChooser.APPROVE_OPTION) {
+                currentGame.saveGame(fileChooser.getSelectedFile().getPath());
+                JOptionPane.showMessageDialog(gui,
+                        "Game saved successfully!",
+                        "Save Game",
+                        JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
+
+        mainMenuItem.addActionListener(e -> {
+            if (JOptionPane.showConfirmDialog(gui,
+                    "Return to main menu? Progress will not be saved.",
+                    "Confirm",
+                    JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                gui.dispose();
+                showMainMenu();
+            }
+        });
+
+        exitItem.addActionListener(e -> {
+            if (JOptionPane.showConfirmDialog(gui,
+                    "Are you sure you want to exit the game?",
+                    "Confirm",
+                    JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                System.exit(0);
+            }
+        });
+
+        gameMenu.add(saveItem);
+        gameMenu.addSeparator();
+        gameMenu.add(mainMenuItem);
+        gameMenu.addSeparator();
+        gameMenu.add(exitItem);
+
+        menuBar.add(gameMenu);
+        gui.setJMenuBar(menuBar);
+
+        // Start game timer
+        currentGame.startTurnTimer();
     }
 }
