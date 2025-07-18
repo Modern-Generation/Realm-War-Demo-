@@ -7,10 +7,10 @@ import Units.Units;
 
 public abstract class Blocks {
     protected boolean isOwned;
-    protected transient Player owner;
+    protected  Player owner;
     private Position position;
-    private transient Structures structure;
-    private transient Units units;
+    private  Structures structure;
+    private  Units units;
 
     public Blocks(Position position) {
         this.position = position;

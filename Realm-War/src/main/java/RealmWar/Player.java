@@ -35,7 +35,7 @@ public class Player {
     }
 
     public void setOwnedBlocks(Set<Blocks> ownedBlocks) {
-        this.ownedBlocks = ownedBlocks;
+        this.ownedBlocks = ownedBlocks != null ? ownedBlocks : new HashSet<>();
     }
 
     public String getName() {
@@ -63,6 +63,7 @@ public class Player {
     }
 
     public Set<Blocks> getOwnedBlocks() {
+        if (ownedBlocks == null) ownedBlocks = new HashSet<>();
         return ownedBlocks;
     }
 
@@ -128,7 +129,7 @@ public class Player {
     }
 
     public void addOwnedBlock(Blocks block) {
-        ownedBlocks.add(block);
+        getOwnedBlocks().add(block);
     }
 
     public void removeOwnedBlock(Blocks block) {
