@@ -3,13 +3,11 @@ package RealmWar;
 import GUI.GameGUI;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
+import Utils.RuntimeTypeAdapterFactory;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import Blocks.*;
 import Grid.*;
@@ -18,7 +16,6 @@ import Units.*;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import java.util.Scanner;
 import java.util.concurrent.*;
 
 public class Game {
@@ -229,9 +226,33 @@ public class Game {
             System.err.println("Failed to save game." + e.getMessage());
         }
     }*/
+
+    private Gson createGsonWithAdapters() {
+        RuntimeTypeAdapterFactory<Structures> structureAdapter =
+        RuntimeTypeAdapterFactory.of(Structures.class, "type")
+        .registerSubtype(TownHall.class).registerSubtype(Barrack.class)
+        .registerSubtype(Farm.class).registerSubtype(Market.class).registerSubtype(Tower.class);
+
+        RuntimeTypeAdapterFactory<Units> unitsAdapter =
+        RuntimeTypeAdapterFactory.of(Units.class, "type")
+        .registerSubtype(Knight.class).registerSubtype(Peasant.class)
+        .registerSubtype(SpearMan.class).registerSubtype(SwordMan.class);
+
+        RuntimeTypeAdapterFactory<Blocks> blocksAdapter =
+        RuntimeTypeAdapterFactory.of(Blocks.class, "type")
+        .registerSubtype(EmptyBlock.class).registerSubtype(ForestBlock.class).registerSubtype(VoidBlock.class);
+
+        return new GsonBuilder()
+        .registerTypeAdapterFactory(structureAdapter)
+        .registerTypeAdapterFactory(unitsAdapter)
+        .registerTypeAdapterFactory(blocksAdapter)
+        .setPrettyPrinting()
+        .create();
+    }
+
     public void saveGame(String filePath) {
+        Gson gson = createGsonWithAdapters();
         try (FileWriter writer = new FileWriter(filePath)) {
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
             JsonObject gameData = new JsonObject();
 
             // ذخیره اطلاعات بازیکنان
@@ -242,7 +263,7 @@ public class Game {
             JsonElement gridJson = gson.toJsonTree(grid);
             gameData.add("grid", gridJson);
 
-// ذخیره نوبت فعلی
+            // ذخیره نوبت فعلی
             gameData.addProperty("currentPlayerIndex", gc.getCurrentPlayerIndex());
 
             gson.toJson(gameData, writer);
@@ -254,8 +275,8 @@ public class Game {
 
     // --- Load game state from JSON file ---
     public Game loadGame(String filePath) {
+        Gson gson = createGsonWithAdapters();
         try (FileReader reader = new FileReader(filePath)) {
-            Gson gson = new Gson();
             JsonObject gameData = gson.fromJson(reader, JsonObject.class);
 
             //Deserialize players
@@ -269,7 +290,7 @@ public class Game {
             Game newGame = new Game(newPlayers, loadedGrid.getWidth(), loadedGrid.getHeight());
             newGame.grid = loadedGrid;
             newGame.players = newPlayers;
-            int currentPlayerIndex = gameData.get("CurrentPlayerIndex").getAsInt();
+            int currentPlayerIndex = gameData.get("currentPlayerIndex").getAsInt();
             newGame.gc.setCurrentPlayerIndex(currentPlayerIndex);
             fixOwners(newGame);
 
@@ -300,9 +321,11 @@ public class Game {
 
     private void fixOwners(Game game) {
         for (Player player : game.getPlayers()) {
-            player.getOwnedBlocks().clear();
-            player.getUnits().clear();
-            player.getStructures().clear();
+            if (player.getOwnedBlocks() == null){
+                player.setOwnedBlocks(new HashSet<>());
+            } else {
+                player.getOwnedBlocks().clear();
+            }
         }
 
         for (int x = 0; x < game.getGrid().getWidth(); x++) {

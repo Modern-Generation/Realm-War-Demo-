@@ -28,6 +28,34 @@ public class Grid {
         }
     }
 
+    public void setUnit(Units unit) {
+        Position pos = unit.getPosition();
+        if (!isValidPosition(pos.getX(), pos.getY())) {
+            System.out.println("Invalid position");
+            return;
+        }
+
+        Blocks block = getBlock(pos);
+
+        if (block.getUnit() != null || block.getStructure() != null) {
+            System.out.println("شما فقط می‌توانید یک یونیت یا ساختار روی هر بلاک قرار دهید.");
+            return;
+        }
+
+        // اگر بلاک جنگل بود، جنگل را تخریب کن
+        if (block instanceof ForestBlock) {
+            ((ForestBlock) block).destroyForest();
+            System.out.println("جنگل تخریب شد در: " + pos);
+        }
+
+        // اضافه کردن یونیت به لیست اصلی
+        units.add(unit);
+
+        // قرار دادن یونیت در بلوک
+        block.setUnit(unit);
+    }
+
+
     public void addUnit(Units unit) {
         Position pos = unit.getPosition();
         if (isValidPosition(pos.getX(), pos.getY())) {
@@ -47,9 +75,19 @@ public class Grid {
     public void moveUnit(Units unit, Position newPos) {
         if (!isValidPosition(newPos.getX(), newPos.getY()))
             return;
+        Position oldPos = unit.getPosition();
         Units target = getUnitAt(newPos);
         if (target == null) {
             unit.setPosition(newPos);
+
+            Blocks oldBlock = getBlock(oldPos);
+            if (oldBlock != null) {
+                oldBlock.removeUnit();
+            }
+            Blocks newBlock = getBlock(newPos);
+            if (newBlock != null) {
+                newBlock.setUnit(unit);
+            }
             return;
         }
         if (!target.getOwner().equals(unit.getOwner())) {
@@ -215,6 +253,9 @@ public class Grid {
         if (block == null || !block.canBuildStructure()) {
             System.out.println("Can't build structure");
             return;
+        }
+        if (block.getStructure() != null || block.getUnit() != null) {
+            System.out.println("You can only build structure or train unit on each block");
         }
         if (block instanceof ForestBlock) {
             ((ForestBlock) block).destroyForest();

@@ -16,9 +16,9 @@ public class Player {
     private int id;
     private int unitSpace;
     private int maxUnitSpace;
-    private List<Units> units;
-    private List<Structures> structures;
-    private transient Set<Blocks> ownedBlocks;
+    private List<Units> units = new ArrayList<>();
+    private List<Structures> structures = new ArrayList<>();
+    private transient Set<Blocks> ownedBlocks = new HashSet<>();
     private boolean isDefeated = false;
 
 
@@ -32,6 +32,10 @@ public class Player {
         this.units = new ArrayList<>();
         this.structures = new ArrayList<>();
         this.ownedBlocks = new HashSet<>();
+    }
+
+    public void setOwnedBlocks(Set<Blocks> ownedBlocks) {
+        this.ownedBlocks = ownedBlocks;
     }
 
     public String getName() {

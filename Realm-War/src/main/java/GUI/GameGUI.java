@@ -148,6 +148,14 @@ public class GameGUI extends JFrame {
                 cell.setPreferredSize(new Dimension(60, 60));
                 styleCell(cell, block);
 
+                if (block.getUnit() != null) {
+                    cell.setText(block.getUnit().getClass().getSimpleName());
+                } else if (block.getStructure() != null) {
+                    cell.setText(block.getStructure().getClass().getSimpleName());
+                } else {
+                    cell.setText("");
+                }
+
                 final int finalX = x;
                 final int finalY = y;
                 cell.addActionListener(e -> handleCellClick(finalX, finalY));
@@ -191,6 +199,18 @@ public class GameGUI extends JFrame {
         }
         cell.setText(text.toString());
 
+    }
+
+    public void updateCellsAfterMove(Position oldPos, Position newPos) {
+        updateCell(oldPos);
+        updateCell(newPos);
+    }
+
+    private void updateCell(Position pos) {
+        int index = pos.getY() * game.getGrid().getWidth() + pos.getX();
+        JButton cell = (JButton) gameBoard.getComponent(index);
+        Blocks block = game.getGrid().getBlock(pos);
+        styleCell(cell, block);
     }
 
     private void handleCellClick(int x, int y) {
@@ -349,6 +369,7 @@ public class GameGUI extends JFrame {
 
         if (currentPlayer.addUnit(unit)) {
             game.getGrid().addUnit(unit);
+            game.getGrid().setUnit(unit);
             currentPlayer.addUnit(unit);
             updateGameBoard();
             updateGameInfo();
@@ -388,8 +409,9 @@ public class GameGUI extends JFrame {
                 int y = Integer.parseInt(yField.getText());
                 Position target = new Position(x, y);
                 if (game.getGrid().isValidPosition(x, y)) {
+                    Position oldPos = unit.getPosition();
                     game.getGrid().moveUnit(unit, target);
-                    updateGameBoard();
+                    updateCellsAfterMove(oldPos, target);
                     dialog.dispose();
                 } else {
                     JOptionPane.showMessageDialog(dialog, "Invalid position!", "Error", JOptionPane.ERROR_MESSAGE);
