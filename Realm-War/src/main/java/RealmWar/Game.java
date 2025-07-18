@@ -303,29 +303,28 @@ public class Game {
     }
 
     // --- Restart the game to initial state ---
-    public void restartGame() {
-        List<Player> resetPlayers = new ArrayList<>();
-        for (Player player : players) {
-            resetPlayers.add(new Player(player.getName(), player.getId()));
-        }
-        this.players = resetPlayers;
-        this.grid = new Grid(grid.getWidth(), grid.getHeight());
-        this.nowPlayerIndex = 0;
-        this.isGameOver = false;
-        initGameBoard();
-        System.out.println("Game restarted.");
-    }
+//    public void restartGame() {
+//        List<Player> resetPlayers = new ArrayList<>();
+//        for (Player player : players) {
+//            resetPlayers.add(new Player(player.getName(), player.getId()));
+//        }
+//        this.players = resetPlayers;
+//        this.grid = new Grid(grid.getWidth(), grid.getHeight());
+//        this.nowPlayerIndex = 0;
+//        this.isGameOver = false;
+//        initGameBoard();
+//        System.out.println("Game restarted.");
+//    }
+
     public int getCurrentPlayerIndex() {
         return this.nowPlayerIndex;
     }
 
     private void fixOwners(Game game) {
         for (Player player : game.getPlayers()) {
-            if (player.getOwnedBlocks() == null){
-                player.setOwnedBlocks(new HashSet<>());
-            } else {
-                player.getOwnedBlocks().clear();
-            }
+            player.setOwnedBlocks(new HashSet<>());
+            player.setStructures(new ArrayList<>());
+            player.setUnits(new ArrayList<>());
         }
 
         for (int x = 0; x < game.getGrid().getWidth(); x++) {
@@ -349,13 +348,31 @@ public class Game {
                         owner.getUnits().add(unit);
                     }
                 }
+//                else {
+//                    Units unit = block.getUnit();
+//                    if (unit != null && unit.getOwner() != null) {
+//                        block.setOwner(unit.getOwner());
+//                        unit.getOwner().addOwnedBlock(block);
+//                        unit.getOwner().getUnits().add(unit);
+//                    }
+//                    Structures structure = block.getStructure();
+//                    if (structure != null && structure.getOwner() != null) {
+//                        block.setOwner((structure.getOwner()));
+//                        structure.getOwner().addOwnedBlock(block);
+//                        structure.getOwner().getStructures().add(structure);
+//                    }
+//                }
             }
         }
 
         // همچنین ممکنه یونیت‌هایی که داخل grid.units هستند هم باید بررسی شوند اگر در بلوک‌ها نیستند
         for (Units unit : game.getGrid().getAllUnits()) {
-            if (unit.getOwner() != null && !unit.getOwner().getUnits().contains(unit)) {
-                unit.getOwner().getUnits().add(unit);
+            for(Player player : game.getPlayers()) {
+                if(player.getId() == unit.getOwnerId()){
+                    unit.setOwner(player);
+                    player.getUnits().add(unit);
+                    break;
+                }
             }
         }
     }

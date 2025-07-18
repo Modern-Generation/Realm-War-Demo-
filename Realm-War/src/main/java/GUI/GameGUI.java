@@ -204,6 +204,7 @@ public class GameGUI extends JFrame {
     public void updateCellsAfterMove(Position oldPos, Position newPos) {
         updateCell(oldPos);
         updateCell(newPos);
+        gameBoard.repaint();
     }
 
     private void updateCell(Position pos) {
@@ -385,7 +386,7 @@ public class GameGUI extends JFrame {
         }
 
         Units unit = game.getGrid().getUnitAt(selectedPosition);
-        if (unit == null || !unit.getOwner().equals(gameController.getCurrentPlayer())) {
+        if (unit == null || !gameController.getCurrentPlayer().equals(unit.getOwner())) {
             JOptionPane.showMessageDialog(this, "No valid unit selected!", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }

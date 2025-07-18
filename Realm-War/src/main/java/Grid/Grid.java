@@ -78,13 +78,12 @@ public class Grid {
         Position oldPos = unit.getPosition();
         Units target = getUnitAt(newPos);
         if (target == null) {
-            unit.setPosition(newPos);
-
+            Blocks newBlock = getBlock(newPos);
             Blocks oldBlock = getBlock(oldPos);
             if (oldBlock != null) {
                 oldBlock.removeUnit();
             }
-            Blocks newBlock = getBlock(newPos);
+            unit.setPosition(newPos);
             if (newBlock != null) {
                 newBlock.setUnit(unit);
             }
@@ -96,22 +95,49 @@ public class Grid {
             if (!target.isAlive()) {
                 units.remove(target);
                 target.getOwner().removeUnit(target);
+                Blocks targetBlock = getBlock(newPos);
+                if(targetBlock != null) {
+                    targetBlock.removeUnit();
+                }
+                Blocks oldBlock = getBlock(oldPos);
+                if(oldBlock != null) {
+                    oldBlock.removeUnit();
+                }
                 unit.setPosition(newPos);
+                if(targetBlock != null) {
+                    targetBlock.setUnit(unit);
+                }
             }
             if (!unit.isAlive()) {
                 units.remove(unit);
                 unit.getOwner().removeUnit(unit);
+                Blocks oldBlock = getBlock(oldPos);
+                if(oldBlock != null) {
+                    oldBlock.removeUnit();
+                }
             }
         } else {
             Units mergedUnit = mergeUnits(unit, target);
             if (mergedUnit != null) {
                 units.remove(unit);
                 units.remove(target);
-                mergedUnit.setPosition(newPos);
-                units.add(mergedUnit);
                 unit.getOwner().removeUnit(unit);
                 target.getOwner().removeUnit(target);
+                mergedUnit.setPosition(newPos);
+                units.add(mergedUnit);
                 mergedUnit.getOwner().addUnit(mergedUnit);
+
+                Blocks oldBlock = getBlock(oldPos);
+                Blocks targetBlock = getBlock(newPos);
+                if(oldBlock != null) {
+                    oldBlock.removeUnit();
+                }
+                if(targetBlock != null) {
+                    targetBlock.removeUnit();
+                }
+                if(targetBlock != null) {
+                    targetBlock.setUnit(mergedUnit);
+                }
             }
         }
     }

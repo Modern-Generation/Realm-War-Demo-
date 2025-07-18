@@ -14,11 +14,13 @@ public abstract class Units {
     protected int ration;
     protected int unitSpace;
     protected int level;
-    protected transient Player owner;
+    protected Player owner;
+    protected int ownerId;
     protected Position position;
 
     public Units(Player owner, Position position) {
         this.owner = owner;
+        this.ownerId = owner.getId();
         this.position = position;
         this.level = 1;
     }
@@ -49,6 +51,14 @@ public abstract class Units {
 
     public void setOwner(Player owner) {
         this.owner = owner;
+    }
+
+    public int getOwnerId(){
+        return ownerId;
+    }
+
+    public void setOwnerId(int ownerId){
+        this.ownerId = ownerId;
     }
 
     public int getAttackPower() {

@@ -38,6 +38,14 @@ public class Player {
         this.ownedBlocks = ownedBlocks != null ? ownedBlocks : new HashSet<>();
     }
 
+    public void setStructures(List<Structures> structures) {
+        this.structures = structures;
+    }
+
+    public void setUnits(List<Units> units) {
+        this.units = units;
+    }
+
     public String getName() {
         return name;
     }
@@ -55,6 +63,9 @@ public class Player {
     }
 
     public List<Units> getUnits() {
+        if(units == null) {
+            units = new ArrayList<>();
+        }
         return units;
     }
 

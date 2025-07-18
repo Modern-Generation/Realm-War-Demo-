@@ -157,20 +157,25 @@ public class GameController {
         switch (choice) {
             case 1:
                 unit = new Peasant(player, newPos);
+                player.getUnits().add(unit);
                 break;
             case 2:
                 unit = new SpearMan(player, newPos);
+                player.getUnits().add(unit);
                 break;
             case 3:
                 unit = new SwordMan(player, newPos);
+                player.getUnits().add(unit);
                 break;
             case 4:
                 unit = new Knight(player, newPos);
+                player.getUnits().add(unit);
                 break;
             default:
                 System.out.println("Invalid choice");
                 return;
         }
+        unit.setOwnerId(player.getId());
 
         if (player.addUnit(unit)) {
             grid.addUnit(unit);
