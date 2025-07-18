@@ -349,6 +349,7 @@ public class GameGUI extends JFrame {
 
         if (currentPlayer.addUnit(unit)) {
             game.getGrid().addUnit(unit);
+            currentPlayer.addUnit(unit);
             updateGameBoard();
             updateGameInfo();
         } else {
