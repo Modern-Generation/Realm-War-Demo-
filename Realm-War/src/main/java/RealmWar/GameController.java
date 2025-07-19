@@ -272,4 +272,8 @@ public class GameController {
     public GameGUI getGui() {
         return gui;
     }
+
+    public int getRemainingTurnTime(){
+        return remainingTurnTime;
+    }
 }

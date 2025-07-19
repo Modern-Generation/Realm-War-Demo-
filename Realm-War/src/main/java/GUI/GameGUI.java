@@ -100,7 +100,7 @@ public class GameGUI extends JFrame {
 
 // یک تایمر برای آپدیت زمان باقی‌مانده:
         Timer guiTimer = new Timer(1000, e -> {
-            int remainingTime = game.getRemainingTurnTime(); // نیاز به اضافه کردن متد getRemainingTurnTime() در کلاس Game
+            int remainingTime = gameController.getRemainingTurnTime(); // نیاز به اضافه کردن متد getRemainingTurnTime() در کلاس Game
             turnTimerLabel.setText("Time left: " + remainingTime + "s");
         });
         guiTimer.start();
