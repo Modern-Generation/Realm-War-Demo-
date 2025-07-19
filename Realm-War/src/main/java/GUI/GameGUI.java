@@ -107,6 +107,7 @@ public class GameGUI extends JFrame {
 
         updateGameInfo();
         setVisible(true);
+
         // در کلاس GameGUI
         JButton quickSaveBtn = new JButton("Save Game");
         quickSaveBtn.addActionListener(e -> {
