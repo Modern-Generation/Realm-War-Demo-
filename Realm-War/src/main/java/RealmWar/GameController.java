@@ -7,9 +7,17 @@ import Units.*;
 import Units.*;
 import Blocks.*;
 
+import javax.swing.*;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 public class GameController {
+    private ScheduledExecutorService scheduler;
+    private ScheduledFuture<?> turnTimerTask;
+    private int remainingTurnTime = 30;
     private List<Player> players;
     private Grid grid;
     private int currentPlayerIndex = 0;
@@ -82,6 +90,38 @@ public class GameController {
             System.out.println("\n====Game Over!====\nWinner is: " + winner.getName());
         } else
             System.out.println("\n====Game Over! No Winner.====");
+    }
+
+    public void startTimers(){
+        stopTimers();
+        scheduler = Executors.newSingleThreadScheduledExecutor();
+        turnTimerTask = scheduler.scheduleAtFixedRate(() -> {
+            remainingTurnTime--;
+            System.out.println("Remaining Time: " + remainingTurnTime + " seconds");
+
+            if (remainingTurnTime <= 0){
+                remainingTurnTime = 30;
+                SwingUtilities.invokeLater(() -> {
+                    nextTurn();
+                    Player current = getCurrentPlayer();
+                    current.startTurn();
+                    System.out.println("Turn of Player: " + current.getName());
+
+                    if (gui != null){
+                        gui.refresh();
+                    }
+                });
+            }
+        }, 1, 1, TimeUnit.SECONDS);
+    }
+
+    public void stopTimers() {
+        if(turnTimerTask != null){
+            turnTimerTask.cancel(true);
+        }
+        if (scheduler != null) {
+            scheduler.shutdownNow();
+        }
     }
 
     void handleMoveUnit(Player player) {
@@ -196,6 +236,7 @@ public class GameController {
 
     public void nextTurn() {
         currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+        System.out.println("Turn changed to: " + getCurrentPlayer().getName());
     }
 
     void removeDeadUnits() {

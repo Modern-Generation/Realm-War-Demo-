@@ -177,6 +177,6 @@ public class Main {
         gui.setJMenuBar(menuBar);
 
         // Start game timer
-        currentGame.startTurnTimer();
+        currentGameController.startTimers();
     }
 }

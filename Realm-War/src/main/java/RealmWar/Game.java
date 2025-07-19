@@ -55,7 +55,8 @@ public class Game {
         return remainingTurnTime;
     }
 
-    public void startTurnTimer() {
+    /*public void startTurnTimer() {
+        stopTurnTimer();
         scheduler = Executors.newScheduledThreadPool(2);
 
         // تایمر نوبت بازی
@@ -84,7 +85,7 @@ public class Game {
                 }
             }
         }, 0, 3, TimeUnit.SECONDS);
-    }
+    }*/
 
    /* public int getRemainingTurnTime() {
         if (turnStartTime == 0) return TURN_DURATION; // اگر تایمر شروع نشده، زمان کامل را برگردان
@@ -92,17 +93,17 @@ public class Game {
         return Math.max(0, TURN_DURATION - (int)(elapsed / 1000));
     }*/
 
-    public void stopTurnTimer() {
-        if (turnTask != null) {
-            turnTask.cancel(true);
-        }
-        if (resourcesTask != null) {
-            resourcesTask.cancel(true);
-        }
-        if (scheduler != null) {
-            scheduler.shutdownNow();
-        }
-    }
+//    public void stopTurnTimer() {
+//        if (turnTask != null) {
+//            turnTask.cancel(true);
+//        }
+//        if (resourcesTask != null) {
+//            resourcesTask.cancel(true);
+//        }
+//        if (scheduler != null) {
+//            scheduler.shutdownNow();
+//        }
+//    }
 
     private void initGameBoard() {
         int playerCount = players.size();
@@ -161,7 +162,7 @@ public class Game {
             if (attempts > players.size()) {
                 isGameOver = true;
                 System.out.println("No more players left. Game over!");
-                stopTurnTimer();
+                gc.stopTimers();
                 return;
             }
         } while (players.get(nowPlayerIndex).isDefeated());

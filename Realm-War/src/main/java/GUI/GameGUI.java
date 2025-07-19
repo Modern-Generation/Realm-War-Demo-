@@ -536,6 +536,17 @@ public class GameGUI extends JFrame {
         });
     }
 
+    public void refresh(){
+        Player currentPlayer = game.getCurrentPlayer();
+
+        currentPlayerLabel.setText("Player: " + currentPlayer.getName());
+        goldLabel.setText("Gold: " + currentPlayer.getGold());
+        foodLabel.setText("Food: " + currentPlayer.getFood());
+
+        infoPanel.repaint();
+        infoPanel.revalidate();
+    }
+
     public void showResourceGain(int gold, int food) {
         JLabel gainLabel = new JLabel("+" + gold + " Gold, +" + food + " Food");
         gainLabel.setForeground(Color.GREEN);
