@@ -121,7 +121,13 @@ public class GameController {
         }
         if (scheduler != null) {
             scheduler.shutdownNow();
+            scheduler = null;
         }
+    }
+
+    public void resetTurnTimer() {
+        this.remainingTurnTime = 30;
+        startTimers();
     }
 
     void handleMoveUnit(Player player) {

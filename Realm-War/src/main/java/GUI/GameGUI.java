@@ -31,8 +31,8 @@ public class GameGUI extends JFrame {
     private JButton moveButton;
     private Position selectedPosition;
     private JDialog actionDialog;
-    //   private Game game;
     private GameController gc;
+    private Timer guiTimer;
 
 
     public GameGUI(Game game, GameController gameController) {
@@ -99,14 +99,15 @@ public class GameGUI extends JFrame {
         infoPanel.add(turnTimerLabel);
 
 // یک تایمر برای آپدیت زمان باقی‌مانده:
-        Timer guiTimer = new Timer(1000, e -> {
+        guiTimer = new Timer(1000, e -> {
             int remainingTime = gameController.getRemainingTurnTime(); // نیاز به اضافه کردن متد getRemainingTurnTime() در کلاس Game
             turnTimerLabel.setText("Time left: " + remainingTime + "s");
         });
         guiTimer.start();
-
         updateGameInfo();
         setVisible(true);
+        Timer infoUpdateTimer = new Timer(1000, e -> updateGameInfo());
+        infoUpdateTimer.start();
 
         // در کلاس GameGUI
         JButton quickSaveBtn = new JButton("Save Game");
@@ -135,7 +136,6 @@ public class GameGUI extends JFrame {
         } else {
             System.err.println("خطا: controlPanel مقداردهی نشده است");
         }
-
     }
 
     private void initializeGameBoard() {
@@ -499,9 +499,15 @@ public class GameGUI extends JFrame {
     }
 
     private void endTurn() {
+        gameController.stopTimers();
         gameController.nextTurn();
+        gameController.resetTurnTimer();
         updateGameInfo();
         selectedPosition = null;
+
+        if(guiTimer != null) {
+            guiTimer.restart();
+        }
     }
 
     public void updateGameInfo() {
@@ -538,7 +544,7 @@ public class GameGUI extends JFrame {
     }
 
     public void refresh(){
-        Player currentPlayer = game.getCurrentPlayer();
+        Player currentPlayer = gameController.getCurrentPlayer();
 
         currentPlayerLabel.setText("Player: " + currentPlayer.getName());
         goldLabel.setText("Gold: " + currentPlayer.getGold());
