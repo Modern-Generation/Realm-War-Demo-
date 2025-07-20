@@ -119,13 +119,13 @@ public class GameGUI extends JFrame {
                 game.saveGame(savePath); // استفاده از متغیر game که باید در کلاس تعریف شده باشد
 
                 JOptionPane.showMessageDialog(GameGUI.this,
-                        "بازی با موفقیت ذخیره شد!\nمسیر: " + savePath,
+                        "Game saved successfully\nPath: " + savePath,
                         "Save Game",
                         JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(GameGUI.this,
-                        "خطا در ذخیره بازی: " + ex.getMessage(),
-                        "خطا",
+                        "ERROR in saving game!: " + ex.getMessage(),
+                        "ERROR",
                         JOptionPane.ERROR_MESSAGE);
             }
         });
@@ -134,7 +134,7 @@ public class GameGUI extends JFrame {
         if (controlPanel != null) {
             controlPanel.add(quickSaveBtn);
         } else {
-            System.err.println("خطا: controlPanel مقداردهی نشده است");
+            System.err.println("ERROR: ControlPanel Not Valued");
         }
     }
 
@@ -314,6 +314,7 @@ public class GameGUI extends JFrame {
         if (currentPlayer.canBuildStructure(structure)) {
             game.getGrid().setStructure(selectedPosition, structure);
             currentPlayer.addStructure(structure);
+            currentPlayer.generateResources();
             updateGameBoard();
             updateGameInfo();
         } else {
@@ -560,17 +561,17 @@ public class GameGUI extends JFrame {
         gainLabel.setFont(new Font("Arial", Font.BOLD, 14));
 
         // نمایش موقت پیام
-        JPanel messagePanel = new JPanel();
-        messagePanel.add(gainLabel);
+        // JPanel messagePanel = new JPanel();
+        //messagePanel.add(gainLabel);
 
-        JOptionPane optionPane = new JOptionPane(messagePanel, JOptionPane.INFORMATION_MESSAGE);
-        JDialog dialog = optionPane.createDialog("Resources Gained");
-        dialog.setModal(false);
-        dialog.setVisible(true);
+        //  JOptionPane optionPane = new JOptionPane(messagePanel, JOptionPane.INFORMATION_MESSAGE);
+        // JDialog dialog = optionPane.createDialog("Resources Gained");
+        //  dialog.setModal(false);
+        //  dialog.setVisible(true);
 
-        new Timer(2000, e -> {
-            dialog.dispose();
-        }).start();
+        //  new Timer(2000, e -> {
+        //   dialog.dispose();
+        //}).start();
     }
 
 }

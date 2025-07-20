@@ -1,12 +1,10 @@
 package RealmWar;
 
-import GUI.GameGUI;
 import Structures.Structures;
 import Structures.TownHall;
 import Units.Units;
 import Blocks.*;
 
-import javax.swing.*;
 import java.util.*;
 
 public class Player {
@@ -16,8 +14,8 @@ public class Player {
     private int id;
     private int unitSpace;
     private int maxUnitSpace;
-    private List<Units> units = new ArrayList<>();
-    private List<Structures> structures = new ArrayList<>();
+    private transient List<Units> units = new ArrayList<>();
+    private transient List<Structures> structures = new ArrayList<>();
     private transient Set<Blocks> ownedBlocks = new HashSet<>();
     private boolean isDefeated = false;
 
@@ -58,8 +56,16 @@ public class Player {
         return gold;
     }
 
+    public void setGold(int gold) {
+        this.gold = gold;
+    }
+
     public int getFood() {
         return food;
+    }
+
+    public void setFood(int food) {
+        this.food = food;
     }
 
     public List<Units> getUnits() {
@@ -86,7 +92,7 @@ public class Player {
         checkDefeat();
     }
 
-    private void generateResources() {
+    public void generateResources() {
         for (Blocks block : ownedBlocks) {
             if (block instanceof EmptyBlock)
                 gold += 1;
@@ -98,6 +104,11 @@ public class Player {
             food += structure.getFoodPerTurn();
             maxUnitSpace += structure.getUnitSpace();
         }
+    }
+
+    public void addResources(int gold, int food) {
+        this.gold += gold;
+        this.food += food;
     }
 
     public void payMaintenance() {
@@ -122,13 +133,11 @@ public class Player {
         return gold >= structure.getBuildingCost();
     }
 
-    public boolean addStructure(Structures structure) {
+    public void addStructure(Structures structure) {
         if (canBuildStructure(structure)) {
             structures.add(structure);
             gold -= structure.getBuildingCost();
-            return true;
         }
-        return false;
     }
 
     public int getMaxUnitSpace() {
@@ -198,13 +207,11 @@ public class Player {
 
     }
 
-    public boolean spendResources(int goldCost, int foodCost) {
+    public void spendResources(int goldCost, int foodCost) {
         if (canAfford(goldCost, foodCost)) {
             gold -= goldCost;
             food -= foodCost;
-            return true;
         }
-        return false;
     }
 
     public void checkDefeat() {

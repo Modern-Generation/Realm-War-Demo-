@@ -14,7 +14,7 @@ public abstract class Units {
     protected int ration;
     protected int unitSpace;
     protected int level;
-    protected Player owner;
+    protected transient Player owner;
     protected int ownerId;
     protected Position position;
 

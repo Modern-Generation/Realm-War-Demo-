@@ -230,25 +230,25 @@ public class Game {
 
     private Gson createGsonWithAdapters() {
         RuntimeTypeAdapterFactory<Structures> structureAdapter =
-        RuntimeTypeAdapterFactory.of(Structures.class, "type")
-        .registerSubtype(TownHall.class).registerSubtype(Barrack.class)
-        .registerSubtype(Farm.class).registerSubtype(Market.class).registerSubtype(Tower.class);
+                RuntimeTypeAdapterFactory.of(Structures.class, "type")
+                        .registerSubtype(TownHall.class).registerSubtype(Barrack.class)
+                        .registerSubtype(Farm.class).registerSubtype(Market.class).registerSubtype(Tower.class);
 
         RuntimeTypeAdapterFactory<Units> unitsAdapter =
-        RuntimeTypeAdapterFactory.of(Units.class, "type")
-        .registerSubtype(Knight.class).registerSubtype(Peasant.class)
-        .registerSubtype(SpearMan.class).registerSubtype(SwordMan.class);
+                RuntimeTypeAdapterFactory.of(Units.class, "type")
+                        .registerSubtype(Knight.class).registerSubtype(Peasant.class)
+                        .registerSubtype(SpearMan.class).registerSubtype(SwordMan.class);
 
         RuntimeTypeAdapterFactory<Blocks> blocksAdapter =
-        RuntimeTypeAdapterFactory.of(Blocks.class, "type")
-        .registerSubtype(EmptyBlock.class).registerSubtype(ForestBlock.class).registerSubtype(VoidBlock.class);
+                RuntimeTypeAdapterFactory.of(Blocks.class, "type")
+                        .registerSubtype(EmptyBlock.class).registerSubtype(ForestBlock.class).registerSubtype(VoidBlock.class);
 
         return new GsonBuilder()
-        .registerTypeAdapterFactory(structureAdapter)
-        .registerTypeAdapterFactory(unitsAdapter)
-        .registerTypeAdapterFactory(blocksAdapter)
-        .setPrettyPrinting()
-        .create();
+                .registerTypeAdapterFactory(structureAdapter)
+                .registerTypeAdapterFactory(unitsAdapter)
+                .registerTypeAdapterFactory(blocksAdapter)
+                .setPrettyPrinting()
+                .create();
     }
 
     public void saveGame(String filePath) {
@@ -268,9 +268,9 @@ public class Game {
             gameData.addProperty("currentPlayerIndex", gc.getCurrentPlayerIndex());
 
             gson.toJson(gameData, writer);
-            System.out.println("بازی با موفقیت در " + filePath + " ذخیره شد");
+            System.out.println("Saved successfully at " + filePath);
         } catch (IOException e) {
-            System.err.println("خطا در ذخیره بازی: " + e.getMessage());
+            System.err.println("ERROR in saving Game: " + e.getMessage());
         }
     }
 
@@ -335,7 +335,7 @@ public class Game {
                 if (owner != null) {
                     owner.addOwnedBlock(block);
 
-                    // ساختارها
+                // ساختارها
                     Structures structure = block.getStructure();
                     if (structure != null) {
                         structure.setOwner(owner);

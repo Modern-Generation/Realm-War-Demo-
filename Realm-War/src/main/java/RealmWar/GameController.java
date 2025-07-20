@@ -24,6 +24,8 @@ public class GameController {
     private Scanner scanner;
     private GameGUI gui;
 
+    private ScheduledFuture<?> resourceTimerTask;
+
 
     public GameController(List<Player> players, Grid grid, Scanner scanner) {
         this.players = players;
@@ -113,11 +115,42 @@ public class GameController {
                 });
             }
         }, 1, 1, TimeUnit.SECONDS);
+
+        // تایمر جمع‌آوری منابع (هر 3 ثانیه)
+        resourceTimerTask = scheduler.scheduleAtFixedRate(() -> {
+            SwingUtilities.invokeLater(() -> {
+                for (Player player : players) {
+                    if (!player.isDefeated()) {
+                        int goldBefore = player.getGold();
+                        int foodBefore = player.getFood();
+
+                        player.collectResources();
+
+                        int goldGained = player.getGold() + goldBefore;
+                        int foodGained = player.getFood() + foodBefore;
+
+                        System.out.println(player.getName() +
+                                " gained " + goldGained + " gold and " +
+                                foodGained + " food");
+
+                        if (gui != null) {
+                            gui.refresh();
+                            if (goldGained > 0 || foodGained > 0) {
+                                gui.showResourceGain(goldGained, foodGained);
+                            }
+                        }
+                    }
+                }
+            });
+        }, 0, 3, TimeUnit.SECONDS);
     }
 
     public void stopTimers() {
         if(turnTimerTask != null){
             turnTimerTask.cancel(true);
+        }
+        if (resourceTimerTask != null) {
+            resourceTimerTask.cancel(true);
         }
         if (scheduler != null) {
             scheduler.shutdownNow();
