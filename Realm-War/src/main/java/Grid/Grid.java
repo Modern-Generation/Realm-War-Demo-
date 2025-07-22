@@ -266,7 +266,7 @@ public class Grid {
             if (i < voidCount) {
                 blocks[pos.getX()][pos.getY()] = new VoidBlock(pos);
             } else if (i < voidCount + forestCount) {
-                blocks[pos.getX()][pos.getY()] = new ForestBlock(pos, true);
+                blocks[pos.getX()][pos.getY()] = new ForestBlock(pos);
             } else {
                 blocks[pos.getX()][pos.getY()] = new EmptyBlock(pos);
             }

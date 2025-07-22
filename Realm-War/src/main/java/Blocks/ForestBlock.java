@@ -7,7 +7,7 @@ public class ForestBlock extends Blocks {
 
     private boolean forestDestroyed = false;
 
-    public ForestBlock(Position position, boolean b) {
+    public ForestBlock(Position position) {
         super(position);
     }
 
