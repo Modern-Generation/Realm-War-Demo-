@@ -118,6 +118,12 @@ public abstract class Units {
         return false;
     }
 
+    public boolean isInRange(Position targetPos) {
+        int dx = Math.abs(this.position.getX() - targetPos.getX());
+        int dy = Math.abs(this.position.getY() - targetPos.getY());
+        return dx + dy <= this.attackRange;
+    }
+
     public int calculateDistance(Position p1, Position p2) {
         return Math.abs(p1.getX() - p2.getX()) + Math.abs(p1.getY() - p2.getY());
     }

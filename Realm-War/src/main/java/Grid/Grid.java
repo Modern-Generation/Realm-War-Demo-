@@ -142,6 +142,41 @@ public class Grid {
         return unitIsHigher > targetIsHigher;
     }
 
+    public void attackUnit(Units attacker, Units target) {
+        if(attacker == null || target == null)
+            return;
+
+        if (!attacker.isAlive() || !target.isAlive())
+            return;
+
+        if (attacker.getOwner().equals(target.getOwner()))
+            return;
+
+        if (!attacker.isInRange(target.getPosition())){
+            System.out.println("Target is out of range!");
+            return;
+        }
+        target.takeDamage(attacker.getAttackPower());
+        attacker.takeDamage(target.getAttackPower());
+
+        if(!target.isAlive()) {
+            removeUnit(target);
+            target.getOwner().removeUnit(target);
+            Blocks targetBlock = getBlock(target.getPosition());
+            if (targetBlock != null) {
+                targetBlock.removeUnit();
+            }
+        }
+        if(!attacker.isAlive()) {
+            removeUnit(attacker);
+            attacker.getOwner().removeUnit(attacker);
+            Blocks attackerBlock = getBlock(attacker.getPosition());
+            if (attackerBlock != null) {
+                attackerBlock.removeUnit();
+            }
+        }
+    }
+
     private Units mergeUnits(Units unit, Units target) {
         if (!unit.getClass().equals(target.getClass()))
             return null;

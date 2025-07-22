@@ -458,25 +458,34 @@ public class GameGUI extends JFrame {
                 int y = Integer.parseInt(yField.getText());
                 Position targetPos = new Position(x, y);
 
-                if (game.getGrid().isValidPosition(x, y)) {
-                    Units target = game.getGrid().getUnitAt(targetPos);
-                    if (target != null && !target.getOwner().equals(attacker.getOwner())) {
-                        attacker.attack(target);
-                        if (!target.isAlive()) {
-                            game.getGrid().removeUnit(target);
-                            target.getOwner().removeUnit(target);
-                        }
-                        updateGameBoard();
-                        updateGameInfo();
-                        dialog.dispose();
-                    } else {
-                        JOptionPane.showMessageDialog(dialog,
-                                "No valid target at this position!", "Error", JOptionPane.ERROR_MESSAGE);
-                    }
-                } else {
+                if (!game.getGrid().isValidPosition(x, y)) {
                     JOptionPane.showMessageDialog(dialog,
                             "Invalid position!", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
                 }
+
+                Units targetUnit = game.getGrid().getUnitAt(targetPos);
+                Structures targetStructure = game.getGrid().getStructure(targetPos);
+
+                if ((targetUnit == null || targetUnit.getOwner().equals(attacker.getOwner()))
+                        && (targetStructure == null || targetStructure.getOwner().equals(attacker.getOwner()))) {
+                    JOptionPane.showMessageDialog(dialog,
+                            "No valid enemy target at this position!", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                if (!attacker.isInRange(targetPos)) {
+                    JOptionPane.showMessageDialog(dialog,
+                            "Target is out of attack range!", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                gameController.handleAttack(attacker, targetPos);
+
+                updateGameBoard();
+                updateGameInfo();
+                dialog.dispose();
+
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(dialog,
                         "Please enter valid coordinates!", "Error", JOptionPane.ERROR_MESSAGE);
@@ -488,8 +497,8 @@ public class GameGUI extends JFrame {
         dialog.pack();
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
-
     }
+
 
     private void upgradeStructure(Structures structure) {
         Player currentPlayer = gameController.getCurrentPlayer();

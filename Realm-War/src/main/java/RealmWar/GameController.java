@@ -2,6 +2,7 @@ package RealmWar;
 
 import GUI.GameGUI;
 import Grid.*;
+import Structures.Structures;
 import Structures.TownHall;
 import Units.*;
 import Units.*;
@@ -263,6 +264,68 @@ public class GameController {
             System.out.println("Not enough resources or unit space!");
         }
     }
+
+    public void handleAttack(Units attacker, Position targetPos) {
+        if (attacker == null || targetPos == null) {
+            System.out.println("Invalid attacker or target position");
+            return;
+        }
+
+        if (!grid.isValidPosition(targetPos.getX(), targetPos.getY())) {
+            System.out.println("Invalid target position");
+            return;
+        }
+
+        Units targetUnit = grid.getUnitAt(targetPos);
+        Structures targetStructure = grid.getStructure(targetPos);
+
+        if (targetUnit != null && !targetUnit.getOwner().equals(attacker.getOwner())) {
+            if (!attacker.isInRange(targetPos)) {
+                System.out.println("Target is out of range");
+                return;
+            }
+
+            targetUnit.takeDamage(attacker.getAttackPower());
+            attacker.takeDamage(targetUnit.getAttackPower());
+
+            System.out.println(attacker.getClass().getSimpleName() + " attacked " +
+                    targetUnit.getClass().getSimpleName());
+
+            if (!targetUnit.isAlive()) {
+                grid.removeUnit(targetUnit);
+                targetUnit.getOwner().removeUnit(targetUnit);
+                System.out.println("Target unit destroyed!");
+            }
+
+            if (!attacker.isAlive()) {
+                grid.removeUnit(attacker);
+                attacker.getOwner().removeUnit(attacker);
+                System.out.println("Attacker unit died!");
+            }
+
+        } else if (targetStructure != null && !targetStructure.getOwner().equals(attacker.getOwner())) {
+            if (!attacker.isInRange(targetPos)) {
+                System.out.println("Target is out of range");
+                return;
+            }
+
+            targetStructure.takeDamage(attacker.getAttackPower());
+            System.out.println("Structure attacked!");
+
+            if (!targetStructure.isAlive()) {
+                grid.destroyStructure(targetPos);
+                System.out.println("Structure destroyed!");
+            }
+
+        } else {
+            System.out.println("No valid enemy target at this position");
+        }
+
+        if (gui != null) {
+            gui.refresh();
+        }
+    }
+
 
     void showPlayerInfo(Player player) {
         System.out.println("---Player " + player.getName() + "'s Info---");
