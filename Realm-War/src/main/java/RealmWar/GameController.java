@@ -45,63 +45,63 @@ public class GameController {
         this.currentPlayerIndex = index;
     }
 
-    public void startGame() {
-        while (!isGameOver()) {
-            Player player = getCurrentPlayer();
+//    public void startGame() {
+//        while (!isGameOver()) {
+//            Player player = getCurrentPlayer();
+//
+//            if (player.isDefeated()) {
+//                System.out.println("Oops! " + player.getName() + " is defeated! Skipping Turn...");
+//                nextTurn();
+//                continue;
+//            }
+//
+//            System.out.println("\n==== " + player.getName() + "'s Turn ====");
+//            player.startTurn();
+//
+//            boolean endTurn = false;
+//            while (!endTurn) {
+//                showPlayerInfo(player);
+//                System.out.println("1. Move Unit");
+//                System.out.println("2. Trian Unit");
+//                System.out.println("3. End Turn");
+//                System.out.println("Choose an action: ");
+//                int action = scanner.nextInt();
+//                scanner.nextLine();
+//
+//                switch (action) {
+//                    case 1:
+//                        handleMoveUnit(player);
+//                        break;
+//                    case 2:
+//                        handleTrainUnit(player);
+//                        break;
+//                    case 3:
+//                        endTurn = true;
+//                        break;
+//                    default:
+//                        System.out.println("Invalid option");
+//                        break;
+//                }
+//            }
+//            removeDeadUnits();
+//            checkPlayerDefeat();
+//            nextTurn();
+//        }
+//        Player winner = getWinner();
+//        if (winner != null) {
+//            System.out.println("\n====Game Over!====\nWinner is: " + winner.getName());
+//        } else
+//            System.out.println("\n====Game Over! No Winner.====");
+//    }
 
-            if (player.isDefeated()) {
-                System.out.println("Oops! " + player.getName() + " is defeated! Skipping Turn...");
-                nextTurn();
-                continue;
-            }
-
-            System.out.println("\n==== " + player.getName() + "'s Turn ====");
-            player.startTurn();
-
-            boolean endTurn = false;
-            while (!endTurn) {
-                showPlayerInfo(player);
-                System.out.println("1. Move Unit");
-                System.out.println("2. Trian Unit");
-                System.out.println("3. End Turn");
-                System.out.println("Choose an action: ");
-                int action = scanner.nextInt();
-                scanner.nextLine();
-
-                switch (action) {
-                    case 1:
-                        handleMoveUnit(player);
-                        break;
-                    case 2:
-                        handleTrainUnit(player);
-                        break;
-                    case 3:
-                        endTurn = true;
-                        break;
-                    default:
-                        System.out.println("Invalid option");
-                        break;
-                }
-            }
-            removeDeadUnits();
-            checkPlayerDefeat();
-            nextTurn();
-        }
-        Player winner = getWinner();
-        if (winner != null) {
-            System.out.println("\n====Game Over!====\nWinner is: " + winner.getName());
-        } else
-            System.out.println("\n====Game Over! No Winner.====");
-    }
-
-    public void startTimers(){
+    public void startTimers() {
         stopTimers();
         scheduler = Executors.newSingleThreadScheduledExecutor();
         turnTimerTask = scheduler.scheduleAtFixedRate(() -> {
             remainingTurnTime--;
             System.out.println("Remaining Time: " + remainingTurnTime + " seconds");
 
-            if (remainingTurnTime <= 0){
+            if (remainingTurnTime <= 0) {
                 remainingTurnTime = 30;
                 SwingUtilities.invokeLater(() -> {
                     nextTurn();
@@ -109,14 +109,14 @@ public class GameController {
                     current.startTurn();
                     System.out.println("Turn of Player: " + current.getName());
 
-                    if (gui != null){
+                    if (gui != null) {
                         gui.refresh();
                     }
                 });
             }
         }, 1, 1, TimeUnit.SECONDS);
 
-        // تایمر جمع‌آوری منابع (هر 3 ثانیه)
+        //Gain resources timer(every 3 seconds)
         resourceTimerTask = scheduler.scheduleAtFixedRate(() -> {
             SwingUtilities.invokeLater(() -> {
                 for (Player player : players) {
@@ -146,7 +146,7 @@ public class GameController {
     }
 
     public void stopTimers() {
-        if(turnTimerTask != null){
+        if (turnTimerTask != null) {
             turnTimerTask.cancel(true);
         }
         if (resourceTimerTask != null) {
@@ -303,7 +303,6 @@ public class GameController {
         return players.stream().filter(p -> !p.isDefeated()).findFirst().orElse(null);
     }
 
-
     public void setGui(GameGUI gui) {
         this.gui = gui;
     }
@@ -312,7 +311,7 @@ public class GameController {
         return gui;
     }
 
-    public int getRemainingTurnTime(){
+    public int getRemainingTurnTime() {
         return remainingTurnTime;
     }
 }

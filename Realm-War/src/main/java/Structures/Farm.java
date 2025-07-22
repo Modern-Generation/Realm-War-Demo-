@@ -30,5 +30,4 @@ public class Farm extends Structures {
     public int levelUpCost() {
         return 5 * currentLevel;
     }
-
 }

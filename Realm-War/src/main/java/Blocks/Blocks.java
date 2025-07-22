@@ -9,8 +9,8 @@ public abstract class Blocks {
     protected boolean isOwned;
     protected transient Player owner;
     private Position position;
-    private  Structures structure;
-    private  Units units;
+    private Structures structure;
+    private Units units;
 
     public Blocks(Position position) {
         this.position = position;

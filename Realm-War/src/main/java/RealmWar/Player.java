@@ -69,7 +69,7 @@ public class Player {
     }
 
     public List<Units> getUnits() {
-        if(units == null) {
+        if (units == null) {
             units = new ArrayList<>();
         }
         return units;
@@ -104,11 +104,6 @@ public class Player {
             food += structure.getFoodPerTurn();
             maxUnitSpace += structure.getUnitSpace();
         }
-    }
-
-    public void addResources(int gold, int food) {
-        this.gold += gold;
-        this.food += food;
     }
 
     public void payMaintenance() {
@@ -238,5 +233,4 @@ public class Player {
     public void addFood(int amount) {
         this.food += amount;
     }
-
 }

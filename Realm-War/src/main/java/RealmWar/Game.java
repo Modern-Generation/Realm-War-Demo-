@@ -4,6 +4,7 @@ import GUI.GameGUI;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import Utils.RuntimeTypeAdapterFactory;
+
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -78,7 +79,6 @@ public class Game {
                     p.addFood(foodGain);
                     System.out.println(p.getName() + " gained " + goldGain + " gold and " + foodGain + " food");
 
-                    // اگر GUI دارید، اینجا می‌توانید رویداد به‌روزرسانی GUI را فراخوانی کنید
                     if (gc.getGui() != null) {
                         gc.getGui().showResourceGain(goldGain, foodGain);
                     }
@@ -88,7 +88,7 @@ public class Game {
     }*/
 
    /* public int getRemainingTurnTime() {
-        if (turnStartTime == 0) return TURN_DURATION; // اگر تایمر شروع نشده، زمان کامل را برگردان
+        if (turnStartTime == 0) return TURN_DURATION;
         long elapsed = System.currentTimeMillis() - turnStartTime;
         return Math.max(0, TURN_DURATION - (int)(elapsed / 1000));
     }*/
@@ -123,7 +123,7 @@ public class Game {
             startingBlock.setOwner(player);
             player.addOwnedBlock(startingBlock);
 
-//Own surrounding blocks
+            //Own surrounding blocks
             for (Position p : grid.getAdjacentPositions(startingPos)) {
                 Blocks adjacent = grid.getBlock(p);
                 if (adjacent != null && adjacent.getOwner() == null) {
@@ -153,7 +153,7 @@ public class Game {
     }
 
     public void nextPlayerTurn() {
-        turnStartTime = System.currentTimeMillis(); // زمان شروع نوبت جدید
+        turnStartTime = System.currentTimeMillis();
 
         int attempts = 0;
         do {
@@ -204,30 +204,6 @@ public class Game {
     }
 
     // --- Save game state to JSON file ---
-   /* public void saveGame(String filePath) {
-        try (FileWriter writer = new FileWriter(filePath)) {
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
-            JsonObject gameData = new JsonObject();
-
-            //Serialize players
-            JsonElement playersJson = gson.toJsonTree(players);
-            gameData.add("players", playersJson);
-
-            //Serialize grid
-            JsonElement gridJson = gson.toJsonTree(grid);
-            gameData.add("grid", gridJson);
-
-            //Serialize current turn index
-            gameData.addProperty("CurrentPlayer", gc.getCurrentPlayerIndex());
-
-            gson.toJson(this, writer);
-            System.out.println("Game saved successfully to " + filePath);
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.err.println("Failed to save game." + e.getMessage());
-        }
-    }*/
-
     private Gson createGsonWithAdapters() {
         RuntimeTypeAdapterFactory<Structures> structureAdapter =
                 RuntimeTypeAdapterFactory.of(Structures.class, "type")
@@ -256,15 +232,12 @@ public class Game {
         try (FileWriter writer = new FileWriter(filePath)) {
             JsonObject gameData = new JsonObject();
 
-            // ذخیره اطلاعات بازیکنان
             JsonElement playersJson = gson.toJsonTree(players);
             gameData.add("players", playersJson);
 
-            // ذخیره وضعیت زمین بازی
             JsonElement gridJson = gson.toJsonTree(grid);
             gameData.add("grid", gridJson);
 
-            // ذخیره نوبت فعلی
             gameData.addProperty("currentPlayerIndex", gc.getCurrentPlayerIndex());
 
             gson.toJson(gameData, writer);
@@ -335,14 +308,12 @@ public class Game {
                 if (owner != null) {
                     owner.addOwnedBlock(block);
 
-                // ساختارها
                     Structures structure = block.getStructure();
                     if (structure != null) {
                         structure.setOwner(owner);
                         owner.getStructures().add(structure);
                     }
 
-                    // یونیت‌ها
                     Units unit = block.getUnit();
                     if (unit != null) {
                         unit.setOwner(owner);
@@ -366,10 +337,9 @@ public class Game {
             }
         }
 
-        // همچنین ممکنه یونیت‌هایی که داخل grid.units هستند هم باید بررسی شوند اگر در بلوک‌ها نیستند
         for (Units unit : game.getGrid().getAllUnits()) {
-            for(Player player : game.getPlayers()) {
-                if(player.getId() == unit.getOwnerId()){
+            for (Player player : game.getPlayers()) {
+                if (player.getId() == unit.getOwnerId()) {
                     unit.setOwner(player);
                     player.getUnits().add(unit);
                     break;
@@ -377,5 +347,4 @@ public class Game {
             }
         }
     }
-
 }

@@ -97,28 +97,28 @@ public class Main {
     }
 
     private static void loadGame() {
-            try {
-                currentGame = new Game(new ArrayList<>(), Config.GRID_WIDTH, Config.GRID_HEIGHT);
-                currentGame = currentGame.loadGame("saves/quicksave.json");
+        try {
+            currentGame = new Game(new ArrayList<>(), Config.GRID_WIDTH, Config.GRID_HEIGHT);
+            currentGame = currentGame.loadGame("saves/quicksave.json");
 
-                currentGameController = new GameController(
-                        currentGame.getPlayers(),
-                        currentGame.getGrid(),
-                        new Scanner(System.in));
-                currentGameController.setCurrentPlayerIndex(currentGame.getCurrentPlayerIndex());
+            currentGameController = new GameController(
+                    currentGame.getPlayers(),
+                    currentGame.getGrid(),
+                    new Scanner(System.in));
+            currentGameController.setCurrentPlayerIndex(currentGame.getCurrentPlayerIndex());
 
-                JOptionPane.showMessageDialog(null,
-                        "Game loaded successfully!",
-                        "Load Game",
-                        JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null,
+                    "Game loaded successfully!",
+                    "Load Game",
+                    JOptionPane.INFORMATION_MESSAGE);
 
-                showInGameMenu();
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(null,
-                        "Error loading game: " + ex.getMessage(),
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-                showMainMenu();
+            showInGameMenu();
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null,
+                    "Error loading game: " + ex.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            showMainMenu();
         }
     }
 

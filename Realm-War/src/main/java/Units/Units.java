@@ -53,11 +53,11 @@ public abstract class Units {
         this.owner = owner;
     }
 
-    public int getOwnerId(){
+    public int getOwnerId() {
         return ownerId;
     }
 
-    public void setOwnerId(int ownerId){
+    public void setOwnerId(int ownerId) {
         this.ownerId = ownerId;
     }
 

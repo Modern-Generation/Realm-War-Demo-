@@ -36,25 +36,18 @@ public class Grid {
         }
 
         Blocks block = getBlock(pos);
-
         if (block.getUnit() != null || block.getStructure() != null) {
-            System.out.println("شما فقط می‌توانید یک یونیت یا ساختار روی هر بلاک قرار دهید.");
+            System.out.println("You can only set a unit or structure on each block");
             return;
         }
-
         // اگر بلاک جنگل بود، جنگل را تخریب کن
         if (block instanceof ForestBlock) {
             ((ForestBlock) block).destroyForest();
-            System.out.println("جنگل تخریب شد در: " + pos);
+            System.out.println("Forest destroyed at: " + pos);
         }
-
-        // اضافه کردن یونیت به لیست اصلی
         units.add(unit);
-
-        // قرار دادن یونیت در بلوک
         block.setUnit(unit);
     }
-
 
     public void addUnit(Units unit) {
         Position pos = unit.getPosition();
@@ -89,6 +82,7 @@ public class Grid {
             }
             return;
         }
+
         if (!target.getOwner().equals(unit.getOwner())) {
             target.takeDamage(unit.getAttackPower());
             unit.takeDamage(target.getAttackPower());
@@ -96,15 +90,15 @@ public class Grid {
                 units.remove(target);
                 target.getOwner().removeUnit(target);
                 Blocks targetBlock = getBlock(newPos);
-                if(targetBlock != null) {
+                if (targetBlock != null) {
                     targetBlock.removeUnit();
                 }
                 Blocks oldBlock = getBlock(oldPos);
-                if(oldBlock != null) {
+                if (oldBlock != null) {
                     oldBlock.removeUnit();
                 }
                 unit.setPosition(newPos);
-                if(targetBlock != null) {
+                if (targetBlock != null) {
                     targetBlock.setUnit(unit);
                 }
             }
@@ -112,7 +106,7 @@ public class Grid {
                 units.remove(unit);
                 unit.getOwner().removeUnit(unit);
                 Blocks oldBlock = getBlock(oldPos);
-                if(oldBlock != null) {
+                if (oldBlock != null) {
                     oldBlock.removeUnit();
                 }
             }
@@ -129,13 +123,13 @@ public class Grid {
 
                 Blocks oldBlock = getBlock(oldPos);
                 Blocks targetBlock = getBlock(newPos);
-                if(oldBlock != null) {
+                if (oldBlock != null) {
                     oldBlock.removeUnit();
                 }
-                if(targetBlock != null) {
+                if (targetBlock != null) {
                     targetBlock.removeUnit();
                 }
-                if(targetBlock != null) {
+                if (targetBlock != null) {
                     targetBlock.setUnit(mergedUnit);
                 }
             }
@@ -171,9 +165,7 @@ public class Grid {
 
     public void removeUnit(Units unit) {
         if (unit != null) {
-            // حذف واحد از لیست واحدها
             units.remove(unit);
-            // حذف واحد از بلوک مربوطه
             Blocks block = getBlock(unit.getPosition());
             if (block != null) {
                 block.removeUnit();

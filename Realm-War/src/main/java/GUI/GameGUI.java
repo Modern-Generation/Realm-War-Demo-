@@ -94,29 +94,29 @@ public class GameGUI extends JFrame {
 
         JLabel turnTimerLabel;
 
-// در بخش تنظیمات infoPanel:
+        //infoPanel
         turnTimerLabel = new JLabel("Time left: 30s");
         infoPanel.add(turnTimerLabel);
 
-// یک تایمر برای آپدیت زمان باقی‌مانده:
+        // Remaining time timer
         guiTimer = new Timer(1000, e -> {
-            int remainingTime = gameController.getRemainingTurnTime(); // نیاز به اضافه کردن متد getRemainingTurnTime() در کلاس Game
+            int remainingTime = gameController.getRemainingTurnTime();
             turnTimerLabel.setText("Time left: " + remainingTime + "s");
         });
+
         guiTimer.start();
         updateGameInfo();
         setVisible(true);
         Timer infoUpdateTimer = new Timer(1000, e -> updateGameInfo());
         infoUpdateTimer.start();
 
-        // در کلاس GameGUI
+        //GameGUI
         JButton quickSaveBtn = new JButton("Save Game");
         quickSaveBtn.addActionListener(e -> {
             try {
-                // ذخیره در پوشه saves در مسیر برنامه
-                new File("saves").mkdirs(); // ایجاد پوشه اگر وجود ندارد
+                new File("saves").mkdirs();
                 String savePath = "saves/quicksave.json";
-                game.saveGame(savePath); // استفاده از متغیر game که باید در کلاس تعریف شده باشد
+                game.saveGame(savePath);
 
                 JOptionPane.showMessageDialog(GameGUI.this,
                         "Game saved successfully\nPath: " + savePath,
@@ -130,7 +130,6 @@ public class GameGUI extends JFrame {
             }
         });
 
-// اضافه کردن به پنل کنترل (مطمئن شوید controlPanel وجود دارد)
         if (controlPanel != null) {
             controlPanel.add(quickSaveBtn);
         } else {
@@ -171,7 +170,8 @@ public class GameGUI extends JFrame {
         if (block instanceof EmptyBlock) {
             cell.setBackground(Color.LIGHT_GRAY);
         } else if (block instanceof ForestBlock) {
-            cell.setBackground(((ForestBlock) block).hasForest() ? new Color(34, 139, 34) : new Color(139, 69, 19));
+            cell.setBackground(((ForestBlock) block).hasForest() ?
+                    new Color(34, 139, 34) : new Color(139, 69, 19));
         } else if (block instanceof VoidBlock) {
             cell.setBackground(Color.BLACK);
         }
@@ -199,7 +199,6 @@ public class GameGUI extends JFrame {
                     .append(" HP").append(block.getUnit().getHitPoints());
         }
         cell.setText(text.toString());
-
     }
 
     public void updateCellsAfterMove(Position oldPos, Position newPos) {
@@ -222,9 +221,9 @@ public class GameGUI extends JFrame {
         if (block.isOwned() && block.getOwner().equals(gameController.getCurrentPlayer())) {
             showBlockActions(block);
         } else {
-            JOptionPane.showMessageDialog(this, "This block is not yours!", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    "This block is not yours!", "Error", JOptionPane.ERROR_MESSAGE);
         }
-
     }
 
     private void showBlockActions(Blocks block) {
@@ -259,7 +258,8 @@ public class GameGUI extends JFrame {
 
     private void showBuildDialog() {
         if (selectedPosition == null) {
-            JOptionPane.showMessageDialog(this, "Please select a block first!", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    "Please select a block first!", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -318,13 +318,15 @@ public class GameGUI extends JFrame {
             updateGameBoard();
             updateGameInfo();
         } else {
-            JOptionPane.showMessageDialog(this, "Not enough resources to build!", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    "Not enough resources to build!", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void showTrainDialog() {
         if (selectedPosition == null) {
-            JOptionPane.showMessageDialog(this, "Please select a block first!", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    "Please select a block first!", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -377,19 +379,22 @@ public class GameGUI extends JFrame {
             updateGameBoard();
             updateGameInfo();
         } else {
-            JOptionPane.showMessageDialog(this, "Not enough resources or unit space!", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    "Not enough resources or unit space!", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void showMoveDialog() {
         if (selectedPosition == null) {
-            JOptionPane.showMessageDialog(this, "Please select a block first!", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    "Please select a block first!", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         Units unit = game.getGrid().getUnitAt(selectedPosition);
         if (unit == null || !gameController.getCurrentPlayer().equals(unit.getOwner())) {
-            JOptionPane.showMessageDialog(this, "No valid unit selected!", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    "No valid unit selected!", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -417,10 +422,12 @@ public class GameGUI extends JFrame {
                     updateCellsAfterMove(oldPos, target);
                     dialog.dispose();
                 } else {
-                    JOptionPane.showMessageDialog(dialog, "Invalid position!", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(dialog,
+                            "Invalid position!", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(dialog, "Please enter valid coordinates!", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(dialog,
+                        "Please enter valid coordinates!", "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
 
@@ -463,13 +470,16 @@ public class GameGUI extends JFrame {
                         updateGameInfo();
                         dialog.dispose();
                     } else {
-                        JOptionPane.showMessageDialog(dialog, "No valid target at this position!", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(dialog,
+                                "No valid target at this position!", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 } else {
-                    JOptionPane.showMessageDialog(dialog, "Invalid position!", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(dialog,
+                            "Invalid position!", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(dialog, "Please enter valid coordinates!", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(dialog,
+                        "Please enter valid coordinates!", "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
 
@@ -492,10 +502,12 @@ public class GameGUI extends JFrame {
                 updateGameBoard();
                 updateGameInfo();
             } else {
-                JOptionPane.showMessageDialog(this, "Not enough gold to upgrade!", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this,
+                        "Not enough gold to upgrade!", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } else {
-            JOptionPane.showMessageDialog(this, "Structure is already at max level!", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    "Structure is already at max level!", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -506,7 +518,7 @@ public class GameGUI extends JFrame {
         updateGameInfo();
         selectedPosition = null;
 
-        if(guiTimer != null) {
+        if (guiTimer != null) {
             guiTimer.restart();
         }
     }
@@ -544,7 +556,7 @@ public class GameGUI extends JFrame {
         });
     }
 
-    public void refresh(){
+    public void refresh() {
         Player currentPlayer = gameController.getCurrentPlayer();
 
         currentPlayerLabel.setText("Player: " + currentPlayer.getName());

@@ -5,7 +5,6 @@ import RealmWar.Player;
 public class TownHall extends Structures {
 
     // TownHall has only one level and no maintenance cost
-
     public TownHall(Player player) {
         super(50, 0, 1); // Maintenance صفر و maxLevel یک
     }
