@@ -119,9 +119,9 @@ public class Game {
             player.addStructure(townHall);
 
             //Own the Block
-            Blocks startingBlock = grid.getBlock(startingPos);
-            startingBlock.setOwner(player);
-            player.addOwnedBlock(startingBlock);
+//            Blocks startingBlock = grid.getBlock(startingPos);
+//            startingBlock.setOwner(player);
+//            player.addOwnedBlock(startingBlock);
 
             //Own surrounding blocks
             for (Position p : grid.getAdjacentPositions(startingPos)) {

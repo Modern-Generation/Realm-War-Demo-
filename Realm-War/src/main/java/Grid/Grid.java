@@ -7,6 +7,7 @@ import Structures.TownHall;
 import Units.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,11 +22,7 @@ public class Grid {
         this.width = width;
         this.height = height;
         blocks = new Blocks[width][height];
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                blocks[x][y] = new EmptyBlock(new Position(x, y));
-            }
-        }
+        randomizeBlocks();
     }
 
     public void setUnit(Units unit) {
@@ -248,6 +245,32 @@ public class Grid {
             }
         }
         return blocksOwnedBy;
+    }
+
+    public void randomizeBlocks() {
+        List<Position> allPositions = new ArrayList<>();
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                allPositions.add(new Position(x, y));
+            }
+        }
+
+        Collections.shuffle(allPositions);
+
+        int totalBlocks = width * height;
+        int forestCount = totalBlocks / 3;  // about 33% Forest block
+        int voidCount = totalBlocks / 10;   // about 10% Void block
+
+        for (int i = 0; i < allPositions.size(); i++) {
+            Position pos = allPositions.get(i);
+            if (i < voidCount) {
+                blocks[pos.getX()][pos.getY()] = new VoidBlock(pos);
+            } else if (i < voidCount + forestCount) {
+                blocks[pos.getX()][pos.getY()] = new ForestBlock(pos, true);
+            } else {
+                blocks[pos.getX()][pos.getY()] = new EmptyBlock(pos);
+            }
+        }
     }
 
     public int valueOfGoldPerTurn(Player player) {

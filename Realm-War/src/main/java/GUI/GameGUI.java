@@ -220,9 +220,10 @@ public class GameGUI extends JFrame {
 
         if (block.isOwned() && block.getOwner().equals(gameController.getCurrentPlayer())) {
             showBlockActions(block);
-        } else {
-            JOptionPane.showMessageDialog(this,
-                    "This block is not yours!", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        else {
+//            JOptionPane.showMessageDialog(this,
+//                    "This block is not yours!", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -561,7 +562,9 @@ public class GameGUI extends JFrame {
             Game game = new Game(players, Config.GRID_WIDTH, Config.GRID_HEIGHT);
             GameController gc = new GameController(players, game.getGrid(), new Scanner(System.in));
 
-            new GameGUI(game, gc);
+//            new GameGUI(game, gc);
+            GameGUI gui = new GameGUI(game, gc);
+            gui.updateGameBoard();
         });
     }
 
