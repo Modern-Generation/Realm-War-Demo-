@@ -6,10 +6,13 @@ import Structures.*;
 import Units.*;
 
 import java.awt.*;
+import java.io.File;
 import java.util.*;
 import java.util.List;
+//import java.util.Timer;
 import java.util.concurrent.*;
 import javax.swing.*;
+import javax.swing.Timer;
 
 public class Main {
     private static Game currentGame;
@@ -23,22 +26,39 @@ public class Main {
 
     private static void showMainMenu() {
         JFrame menuFrame = new JFrame("Realm War - Main Menu");
-        menuFrame.setSize(400, 300);
+        menuFrame.setSize(400, 350);
         menuFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         menuFrame.setLocationRelativeTo(null);
 
         JPanel panel = new JPanel(new GridLayout(4, 1, 10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
+        Font font = null;
+        try {
+            font = Font.createFont(Font.TRUETYPE_FONT, new File("src/main/resources/Font/Audiowide-Regular.ttf")).deriveFont(18f);
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            ge.registerFont(font);
+        } catch (Exception e) {
+            e.printStackTrace();
+            font = new Font("SansSerif", Font.BOLD, 18);
+        }
+
         JButton newGameBtn = new JButton("New Game");
         JButton loadGameBtn = new JButton("Load Game");
         JButton exitBtn = new JButton("Exit");
 
         // Button styling
-        Font btnFont = new Font("Tahoma", Font.BOLD, 16);
-        newGameBtn.setFont(btnFont);
-        loadGameBtn.setFont(btnFont);
-        exitBtn.setFont(btnFont);
+        newGameBtn.setBackground(Color.GREEN);
+        loadGameBtn.setBackground(Color.BLUE);
+        exitBtn.setBackground(Color.RED);
+
+        newGameBtn.setForeground(Color.WHITE);
+        loadGameBtn.setForeground(Color.WHITE);
+        exitBtn.setForeground(Color.WHITE);
+
+        newGameBtn.setFont(font.deriveFont(20f));
+        loadGameBtn.setFont(font.deriveFont(20f));
+        exitBtn.setFont(font.deriveFont(20f));
 
         newGameBtn.addActionListener(e -> {
             menuFrame.dispose();
@@ -60,6 +80,13 @@ public class Main {
 
         menuFrame.add(panel);
         menuFrame.setVisible(true);
+
+        Timer randomColorTimer = new Timer(1000, e -> {
+            Random rand = new Random();
+            Color randomColor = new Color(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256));
+            panel.setBackground(randomColor);
+        });
+        randomColorTimer.start();
     }
 
     private static void setupNewGame() {
