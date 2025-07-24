@@ -29,6 +29,7 @@ public class GameGUI extends JFrame {
     private JButton buildButton;
     private JButton trainButton;
     private JButton moveButton;
+    private JButton attackButton;
     private Position selectedPosition;
     private JDialog actionDialog;
     private GameController gc;
@@ -74,16 +75,19 @@ public class GameGUI extends JFrame {
         buildButton = new JButton("Build Structure");
         trainButton = new JButton("Train Unit");
         moveButton = new JButton("Move Unit");
+        attackButton = new JButton("Attack");
         endTurnButton = new JButton("End Turn");
 
         buildButton.addActionListener(e -> showBuildDialog());
         trainButton.addActionListener(e -> showTrainDialog());
         moveButton.addActionListener(e -> showMoveDialog());
+        attackButton.addActionListener(e -> showAttackDialog());
         endTurnButton.addActionListener(e -> endTurn());
 
         buttonPanel.add(buildButton);
         buttonPanel.add(trainButton);
         buttonPanel.add(moveButton);
+        buttonPanel.add(attackButton);
         buttonPanel.add(endTurnButton);
 
         infoPanel.add(buttonPanel);
@@ -509,7 +513,89 @@ public class GameGUI extends JFrame {
         dialog.setVisible(true);
     }
 
+    private void showAttackDialog() {
+        if (selectedPosition == null) {
+            JOptionPane.showMessageDialog(this,
+                    "Please select a block with your unit first!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        Blocks block = game.getGrid().getBlock(selectedPosition);
+        Units unit = block.getUnit();
+
+        if (unit == null || !unit.getOwner().equals(gameController.getCurrentPlayer())) {
+            JOptionPane.showMessageDialog(this,
+                    "No valid unit selected for attack!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // فراخوانی متد اصلی با واحد انتخاب شده
+        showAttackDialog(unit);
+    }
+
+    // متد اصلی بدون تغییر (همان پیاده‌سازی قبلی)
     private void showAttackDialog(Units attacker) {
+        JDialog dialog = new JDialog(this, "Attack", true);
+        dialog.setLayout(new BorderLayout());
+
+        JPanel inputPanel = new JPanel(new GridLayout(2, 2));
+        JTextField xField = new JTextField();
+        JTextField yField = new JTextField();
+
+        inputPanel.add(new JLabel("Target X:"));
+        inputPanel.add(xField);
+        inputPanel.add(new JLabel("Target Y:"));
+        inputPanel.add(yField);
+
+        JButton attackBtn = new JButton("Attack");
+        attackBtn.addActionListener(e -> {
+            try {
+                int x = Integer.parseInt(xField.getText());
+                int y = Integer.parseInt(yField.getText());
+                Position targetPos = new Position(x, y);
+
+                if (!game.getGrid().isValidPosition(x, y)) {
+                    JOptionPane.showMessageDialog(dialog,
+                            "Invalid position!", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                Units targetUnit = game.getGrid().getUnitAt(targetPos);
+                Structures targetStructure = game.getGrid().getStructure(targetPos);
+
+                if ((targetUnit == null || targetUnit.getOwner().equals(attacker.getOwner()))
+                    && (targetStructure == null || targetStructure.getOwner().equals(attacker.getOwner()))) {
+                    JOptionPane.showMessageDialog(dialog,
+                            "No valid enemy target at this position!", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                if (!attacker.isInRange(targetPos)) {
+                    JOptionPane.showMessageDialog(dialog,
+                            "Target is out of attack range!", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                gameController.handleAttack(attacker, targetPos);
+
+                updateGameBoard();
+                updateGameInfo();
+                dialog.dispose();
+
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(dialog,
+                        "Please enter valid coordinates!", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        dialog.add(inputPanel, BorderLayout.CENTER);
+        dialog.add(attackBtn, BorderLayout.SOUTH);
+        dialog.pack();
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
+    }
+
+    /*private void showAttackDialog(Units attacker) {
         JDialog dialog = new JDialog(this, "Attack", true);
         dialog.setLayout(new BorderLayout());
 
@@ -568,8 +654,7 @@ public class GameGUI extends JFrame {
         dialog.pack();
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
-    }
-
+    }*/
 
     private void upgradeStructure(Structures structure) {
         Player currentPlayer = gameController.getCurrentPlayer();

@@ -258,7 +258,7 @@ public class Grid {
         Collections.shuffle(allPositions);
 
         int totalBlocks = width * height;
-        int forestCount = totalBlocks / 3;  // about 33% Forest block
+        int forestCount = (int)(totalBlocks * 0.8);
         int voidCount = totalBlocks / 10;   // about 10% Void block
 
         for (int i = 0; i < allPositions.size(); i++) {
