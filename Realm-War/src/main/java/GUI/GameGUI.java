@@ -30,6 +30,7 @@ public class GameGUI extends JFrame {
     private JButton trainButton;
     private JButton moveButton;
     private JButton attackButton;
+    private JButton upgradeStructureButton;
     private Position selectedPosition;
     private JDialog actionDialog;
     private GameController gc;
@@ -71,23 +72,88 @@ public class GameGUI extends JFrame {
         infoPanel.add(unitSpaceLabel);
 
         // Create action buttons
-        JPanel buttonPanel = new JPanel(new FlowLayout());
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
         buildButton = new JButton("Build Structure");
         trainButton = new JButton("Train Unit");
         moveButton = new JButton("Move Unit");
         attackButton = new JButton("Attack");
+        upgradeStructureButton = new JButton("Upgrade Structure");
         endTurnButton = new JButton("End Turn");
+
+        Dimension buttonSize = new Dimension(160, 40);
+
+        buildButton.setMaximumSize(buttonSize);
+        trainButton.setMaximumSize(buttonSize);
+        moveButton.setMaximumSize(buttonSize);
+        attackButton.setMaximumSize(buttonSize);
+        upgradeStructureButton.setMaximumSize(buttonSize);
+        endTurnButton.setMaximumSize(buttonSize);
+
+        buttonPanel.add(buildButton);
+        buttonPanel.add(Box.createVerticalStrut(20));
+
+        buttonPanel.add(trainButton);
+        buttonPanel.add(Box.createVerticalStrut(20));
+
+        buttonPanel.add(moveButton);
+        buttonPanel.add(Box.createVerticalStrut(20));
+
+        buttonPanel.add(attackButton);
+        buttonPanel.add(Box.createVerticalStrut(20));
+
+        buttonPanel.add(upgradeStructureButton);
+        buttonPanel.add(Box.createVerticalStrut(20));
+
+        buttonPanel.add(endTurnButton);
+
+        buildButton.setBackground(new Color(139, 69, 19));
+        buildButton.setForeground(Color.WHITE);
+
+        trainButton.setBackground(new Color(135, 206, 235));
+        trainButton.setForeground(Color.WHITE);
+
+        moveButton.setBackground(new Color(0, 0, 128));
+        moveButton.setForeground(Color.WHITE);
+
+        attackButton.setBackground(new Color(128, 0, 0));
+        attackButton.setForeground(Color.WHITE);
+
+        upgradeStructureButton.setBackground(new Color(128, 0, 128));
+        upgradeStructureButton.setForeground(Color.WHITE);
+
+        endTurnButton.setBackground(new Color(255, 140, 0));
+        endTurnButton.setForeground(Color.WHITE);
 
         buildButton.addActionListener(e -> showBuildDialog());
         trainButton.addActionListener(e -> showTrainDialog());
         moveButton.addActionListener(e -> showMoveDialog());
         attackButton.addActionListener(e -> showAttackDialog());
+        upgradeStructureButton.addActionListener(e -> {
+            if (selectedPosition == null) {
+                JOptionPane.showMessageDialog(this,
+                        "Please select a block first!", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            Blocks block = game.getGrid().getBlock(selectedPosition);
+            Structures structure = block.getStructure();
+
+            if (structure == null || !structure.getOwner().equals(gameController.getCurrentPlayer())) {
+                JOptionPane.showMessageDialog(this,
+                        "No owned structure at this position!", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            upgradeStructure(structure);
+        });
         endTurnButton.addActionListener(e -> endTurn());
 
         buttonPanel.add(buildButton);
         buttonPanel.add(trainButton);
         buttonPanel.add(moveButton);
         buttonPanel.add(attackButton);
+        buttonPanel.add(upgradeStructureButton);
         buttonPanel.add(endTurnButton);
 
         infoPanel.add(buttonPanel);
@@ -244,7 +310,7 @@ public class GameGUI extends JFrame {
             if (owner.equals(gameController.getCurrentPlayer())) {
                 cell.setBorder(BorderFactory.createLineBorder(Color.GREEN, 3));
             } else {
-                cell.setBorder(BorderFactory.createLineBorder(Color.RED, 3));
+                cell.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
             }
         } else {
             cell.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
@@ -529,11 +595,9 @@ public class GameGUI extends JFrame {
             return;
         }
 
-        // فراخوانی متد اصلی با واحد انتخاب شده
         showAttackDialog(unit);
     }
 
-    // متد اصلی بدون تغییر (همان پیاده‌سازی قبلی)
     private void showAttackDialog(Units attacker) {
         JDialog dialog = new JDialog(this, "Attack", true);
         dialog.setLayout(new BorderLayout());
@@ -693,8 +757,8 @@ public class GameGUI extends JFrame {
         currentPlayerLabel.setText("Player: " + currentPlayer.getName());
         goldLabel.setText("Gold: " + currentPlayer.getGold());
         foodLabel.setText("Food: " + currentPlayer.getFood());
-        unitSpaceLabel.setText("Unit Space: " + currentPlayer.getCurrentUsedUnitSpace() +
-                "/" + currentPlayer.getMaxUnitSpace());
+//        unitSpaceLabel.setText("Unit Space: " + currentPlayer.getCurrentUsedUnitSpace() +
+//                "/" + currentPlayer.getMaxUnitSpace());
 
         // Highlight current player's blocks
         updateGameBoard();
