@@ -137,7 +137,7 @@ public class GameGUI extends JFrame {
         }
     }
 
-    private void initializeGameBoard() {
+    /*private void initializeGameBoard() {
         gameBoard.removeAll();
         Grid grid = game.getGrid();
 
@@ -163,9 +163,31 @@ public class GameGUI extends JFrame {
                 gameBoard.add(cell);
             }
         }
+    }*/
+
+    private void initializeGameBoard() {
+        gameBoard.removeAll();
+        Grid grid = game.getGrid();
+
+        for (int y = 0; y < grid.getHeight(); y++) {
+            for (int x = 0; x < grid.getWidth(); x++) {
+                Blocks block = grid.getBlock(x, y);
+                JButton cell = new JButton();
+                cell.setPreferredSize(new Dimension(60, 60));
+                styleCell(cell, block);
+
+                final int finalX = x;
+                final int finalY = y;
+                cell.addActionListener(e -> handleCellClick(finalX, finalY));
+
+                gameBoard.add(cell);
+            }
+        }
+        gameBoard.revalidate();
+        gameBoard.repaint();
     }
 
-    private void styleCell(JButton cell, Blocks block) {
+    /*private void styleCell(JButton cell, Blocks block) {
         // Set background color based on block type
         if (block instanceof EmptyBlock) {
             cell.setBackground(Color.LIGHT_GRAY);
@@ -199,6 +221,54 @@ public class GameGUI extends JFrame {
                     .append(" HP").append(block.getUnit().getHitPoints());
         }
         cell.setText(text.toString());
+    }*/
+
+    private void styleCell(JButton cell, Blocks block) {
+        // Set background color based on block type
+        if (block instanceof EmptyBlock) {
+            cell.setBackground(Color.LIGHT_GRAY);
+        } else if (block instanceof ForestBlock) {
+            cell.setBackground(((ForestBlock) block).hasForest() ?
+                    new Color(34, 139, 34) : new Color(139, 69, 19));
+        } else if (block instanceof VoidBlock) {
+            cell.setBackground(Color.BLACK);
+        }
+
+        // Highlight owned blocks
+        if (block.isOwned()) {
+            Player owner = block.getOwner();
+            if (owner.equals(gameController.getCurrentPlayer())) {
+                cell.setBorder(BorderFactory.createLineBorder(Color.GREEN, 3));
+            } else {
+                cell.setBorder(BorderFactory.createLineBorder(Color.RED, 3));
+            }
+        } else {
+            cell.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+        }
+
+        // Clear previous text and icon
+        cell.setText("");
+        cell.setIcon(null);
+
+        // Add unit/structure info
+        StringBuilder text = new StringBuilder("<html>");
+
+        if (block.getStructure() != null) {
+            text.append(block.getStructure().getClass().getSimpleName()).append("<br>");
+        }
+
+        if (block.getUnit() != null) {
+            text.append(block.getUnit().getClass().getSimpleName())
+                    .append(" Lv").append(block.getUnit().getLevel())
+                    .append(" HP").append(block.getUnit().getHitPoints())
+                    .append("<br>");
+        }
+
+        text.append("</html>");
+
+        cell.setText(text.toString());
+        cell.setHorizontalTextPosition(JButton.CENTER);
+        cell.setVerticalTextPosition(JButton.CENTER);
     }
 
     public void updateCellsAfterMove(Position oldPos, Position newPos) {
