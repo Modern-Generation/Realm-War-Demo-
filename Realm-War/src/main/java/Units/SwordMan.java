@@ -16,6 +16,17 @@ public class SwordMan extends Units {
         this.level = 1;
     }
 
+    public SwordMan() {
+        super(null, new Position(0, 0));
+        this.hitPoints = 20;
+        this.movementRange = 2;
+        this.attackPower = 3;
+        this.attackRange = 2;
+        this.payment = 3;
+        this.ration = 2;
+        this.level = 1;
+    }
+
     @Override
     public int getUnitSpace() {
         return 2;

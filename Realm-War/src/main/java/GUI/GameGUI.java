@@ -598,4 +598,17 @@ public class GameGUI extends JFrame {
         //}).start();
     }
 
+    public void syncResourcesToPlayers() {
+        Player currentPlayer = gameController.getCurrentPlayer();
+
+        try {
+            int gold = Integer.parseInt(goldLabel.getText().replaceAll("[^\\d]", ""));
+            int food = Integer.parseInt(foodLabel.getText().replaceAll("[^\\d]", ""));
+
+            currentPlayer.setGold(gold);
+            currentPlayer.setFood(food);
+        } catch (NumberFormatException ex) {
+            System.err.println("Failed to parse gold or food: " + ex.getMessage());
+        }
+    }
 }

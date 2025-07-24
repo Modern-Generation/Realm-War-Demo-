@@ -114,9 +114,9 @@ public class Game {
             Position startingPos = startingPositions.get(i);
 
             //Create & Place TownHall
-            TownHall townHall = new TownHall(player);
-            grid.setStructure(startingPos, townHall);
-            player.addStructure(townHall);
+//            TownHall townHall = new TownHall(player);
+//            grid.setStructure(startingPos, townHall);
+//            player.addStructure(townHall);
 
             //Own the Block
 //            Blocks startingBlock = grid.getBlock(startingPos);
@@ -207,17 +207,24 @@ public class Game {
     private Gson createGsonWithAdapters() {
         RuntimeTypeAdapterFactory<Structures> structureAdapter =
                 RuntimeTypeAdapterFactory.of(Structures.class, "type")
-                        .registerSubtype(TownHall.class).registerSubtype(Barrack.class)
-                        .registerSubtype(Farm.class).registerSubtype(Market.class).registerSubtype(Tower.class);
+                        .registerSubtype(TownHall.class, "TownHall")
+                        .registerSubtype(Barrack.class, "Barrack")
+                        .registerSubtype(Farm.class, "Farm")
+                        .registerSubtype(Market.class, "Market")
+                        .registerSubtype(Tower.class, "Tower");
 
         RuntimeTypeAdapterFactory<Units> unitsAdapter =
                 RuntimeTypeAdapterFactory.of(Units.class, "type")
-                        .registerSubtype(Knight.class).registerSubtype(Peasant.class)
-                        .registerSubtype(SpearMan.class).registerSubtype(SwordMan.class);
+                        .registerSubtype(Knight.class, "Knight")
+                        .registerSubtype(Peasant.class, "Peasant")
+                        .registerSubtype(SpearMan.class, "SpearMan")
+                        .registerSubtype(SwordMan.class, "SwordMan");
 
         RuntimeTypeAdapterFactory<Blocks> blocksAdapter =
                 RuntimeTypeAdapterFactory.of(Blocks.class, "type")
-                        .registerSubtype(EmptyBlock.class).registerSubtype(ForestBlock.class).registerSubtype(VoidBlock.class);
+                        .registerSubtype(EmptyBlock.class, "EmptyBlock")
+                        .registerSubtype(ForestBlock.class, "ForestBlock")
+                        .registerSubtype(VoidBlock.class, "VoidBlock");
 
         return new GsonBuilder()
                 .registerTypeAdapterFactory(structureAdapter)
@@ -232,6 +239,11 @@ public class Game {
         try (FileWriter writer = new FileWriter(filePath)) {
             JsonObject gameData = new JsonObject();
 
+            for (Player player : players) {
+                player.generateResources();
+//                player.payMaintenance();
+            }
+
             JsonElement playersJson = gson.toJsonTree(players);
             gameData.add("players", playersJson);
 
@@ -243,7 +255,7 @@ public class Game {
             gson.toJson(gameData, writer);
             System.out.println("Saved successfully at " + filePath);
         } catch (IOException e) {
-            System.err.println("ERROR in saving Game: " + e.getMessage());
+            System.err.println("Error in saving Game: " + e.getMessage());
         }
     }
 
@@ -264,8 +276,10 @@ public class Game {
             Game newGame = new Game(newPlayers, loadedGrid.getWidth(), loadedGrid.getHeight());
             newGame.grid = loadedGrid;
             newGame.players = newPlayers;
+
             int currentPlayerIndex = gameData.get("currentPlayerIndex").getAsInt();
             newGame.gc.setCurrentPlayerIndex(currentPlayerIndex);
+
             fixOwners(newGame);
 
             return newGame;

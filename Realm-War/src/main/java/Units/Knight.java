@@ -16,6 +16,17 @@ public class Knight extends Units {
         this.level = 1;
     }
 
+    public Knight() {
+        super(null, new Position(0, 0));
+        this.hitPoints = 30;
+        this.movementRange = 3;
+        this.attackPower = 5;
+        this.attackRange = 3;
+        this.payment = 5;
+        this.ration = 3;
+        this.level = 1;
+    }
+
     @Override
     public int getUnitSpace() {
         return 3;

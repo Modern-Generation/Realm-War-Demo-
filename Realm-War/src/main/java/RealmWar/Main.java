@@ -163,6 +163,8 @@ public class Main {
         JMenuItem exitItem = new JMenuItem("Exit");
 
         saveItem.addActionListener(e -> {
+            gui.syncResourcesToPlayers();
+
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setDialogTitle("Save Game");
 

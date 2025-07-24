@@ -14,9 +14,9 @@ public class Player {
     private int id;
     private int unitSpace;
     private int maxUnitSpace;
-    private transient List<Units> units = new ArrayList<>();
-    private transient List<Structures> structures = new ArrayList<>();
-    private transient Set<Blocks> ownedBlocks = new HashSet<>();
+    private List<Units> units = new ArrayList<>();
+    private List<Structures> structures = new ArrayList<>();
+    private Set<Blocks> ownedBlocks = new HashSet<>();
     private boolean isDefeated = false;
 
 
@@ -137,6 +137,14 @@ public class Player {
 
     public int getMaxUnitSpace() {
         return structures.stream().mapToInt(Structures::getUnitSpace).sum();
+    }
+
+    public int get_M_UnitSpace() {
+        return maxUnitSpace;
+    }
+
+    public void set_M_UnitSpace(int maxUnitSpace) {
+        this.maxUnitSpace = maxUnitSpace;
     }
 
     public int getCurrentUsedUnitSpace() {
