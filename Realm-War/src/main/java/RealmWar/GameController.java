@@ -326,6 +326,51 @@ public class GameController {
         }
     }
 
+    public void handleStructureAttack(Units attacker, Structures targetStructure) {
+        if (attacker == null || targetStructure == null) {
+            return;
+        }
+
+        targetStructure.takeDamage(attacker.getAttackPower());
+        attacker.takeDamage(targetStructure.getDurability());
+
+        System.out.println(attacker.getClass().getSimpleName() + " attacked " + targetStructure.getClass().getSimpleName());
+        System.out.println("Structure HP left: " + targetStructure.getDurability());
+        System.out.println("Attacker HP left: " + attacker.getHitPoints());
+
+        if (!attacker.isAlive()) {
+            grid.removeUnit(attacker);
+            attacker.getOwner().removeUnit(attacker);
+            System.out.println("Attacker unit destroyed!");
+        }
+
+        if(!targetStructure.isAlive()) {
+            Position structurePos = targetStructure.getOwner().getOwnedBlocks().stream()
+                    .filter(b -> b.getStructure() == targetStructure).findFirst()
+                    .map(b -> b.getPosition()).orElse(null);
+            if (structurePos != null) {
+                grid.destroyStructure(structurePos);
+            }
+
+            targetStructure.getOwner().removeStructure(targetStructure);
+
+            if (targetStructure instanceof TownHall) {
+                targetStructure.getOwner().setDefeated(true);
+                System.out.println("Town Hall destroyed! " + targetStructure.getOwner().getName() + " has been defeated!");
+                checkPlayerDefeat();
+
+                long alivePlayers = players.stream().filter(p -> !p.isDefeated()).count();
+                if (alivePlayers == 1) {
+                    Player winner = players.stream().filter(p -> !p.isDefeated()).findFirst().get();
+                    JOptionPane.showMessageDialog(null,
+                            "Congratulations, "+ winner.getName() + " has won the game!",
+                            "Victory", JOptionPane.INFORMATION_MESSAGE);
+                    System.exit(0);
+                }
+            }
+        }
+    }
+
 
     void showPlayerInfo(Player player) {
         System.out.println("---Player " + player.getName() + "'s Info---");

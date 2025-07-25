@@ -1,9 +1,12 @@
 package Structures;
 
+import RealmWar.Player;
+
 public class Market extends Structures {
 
-    public Market() {
+    public Market(Player player) {
         super(50, 5, 3);
+        this.owner = player;
     }
 
     @Override

@@ -6,6 +6,7 @@ public class Tower extends Structures {
 
     public Tower(Player player) {
         super(50, 5, 3);
+        this.owner = player;
     }
 
     @Override

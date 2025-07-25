@@ -14,7 +14,7 @@ public abstract class Structures {
         this.durability = durability;
         this.maintenanceCost = maintenanceCost;
         this.maxLevel = maxLevel;
-        this.currentLevel = 1; // شروع با سطح 1
+        this.currentLevel = 1;
     }
 
     public int getCurrentLevel() {

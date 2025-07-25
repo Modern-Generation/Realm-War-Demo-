@@ -1,9 +1,12 @@
 package Structures;
 
+import RealmWar.Player;
+
 public class Farm extends Structures {
 
-    public Farm() {
+    public Farm(Player player) {
         super(50, 5, 3);
+        this.owner = player;
     }
 
     @Override

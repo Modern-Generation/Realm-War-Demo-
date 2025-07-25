@@ -424,17 +424,17 @@ public class GameGUI extends JFrame {
         });
 
         marketBtn.addActionListener(e -> {
-            buildStructure(new Market());
+            buildStructure(new Market(gameController.getCurrentPlayer()));
             dialog.dispose();
         });
 
         farmBtn.addActionListener(e -> {
-            buildStructure(new Farm());
+            buildStructure(new Farm(gameController.getCurrentPlayer()));
             dialog.dispose();
         });
 
         barrackBtn.addActionListener(e -> {
-            buildStructure(new Barrack());
+            buildStructure(new Barrack(gameController.getCurrentPlayer()));
             dialog.dispose();
         });
 
@@ -634,13 +634,37 @@ public class GameGUI extends JFrame {
                     return;
                 }
 
-                if (!attacker.isInRange(targetPos)) {
+                if (targetUnit != null && !targetUnit.getOwner().equals(attacker.getOwner())) {
+                    if (!attacker.isInRange(targetPos)) {
+                        JOptionPane.showMessageDialog(dialog,
+                                "Target unit is out of range!",
+                                "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    gameController.handleAttack(attacker, targetPos);
+                } else if (targetStructure != null && targetStructure.getOwner() != null &&
+                        !targetStructure.getOwner().equals(attacker.getOwner())) {
+                    if (!attacker.isInRange(targetPos)) {
+                        JOptionPane.showMessageDialog(dialog,
+                                "Target Structure is out of range!",
+                                "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    gameController.handleStructureAttack(attacker, targetStructure);
+                } else {
                     JOptionPane.showMessageDialog(dialog,
-                            "Target is out of attack range!", "Error", JOptionPane.ERROR_MESSAGE);
+                            "You can't attack you're own unit or structure!",
+                            "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
-                gameController.handleAttack(attacker, targetPos);
+//                if (!attacker.isInRange(targetPos)) {
+//                    JOptionPane.showMessageDialog(dialog,
+//                            "Target is out of attack range!", "Error", JOptionPane.ERROR_MESSAGE);
+//                    return;
+//                }
+
+//                gameController.handleAttack(attacker, targetPos);
 
                 updateGameBoard();
                 updateGameInfo();
@@ -648,7 +672,8 @@ public class GameGUI extends JFrame {
 
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(dialog,
-                        "Please enter valid coordinates!", "Error", JOptionPane.ERROR_MESSAGE);
+                        "Please enter valid coordinates!",
+                        "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
 

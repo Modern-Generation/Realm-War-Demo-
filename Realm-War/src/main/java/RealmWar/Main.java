@@ -29,6 +29,7 @@ public class Main {
         menuFrame.setSize(400, 350);
         menuFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         menuFrame.setLocationRelativeTo(null);
+        menuFrame.setResizable(false);
 
         JPanel panel = new JPanel(new GridLayout(4, 1, 10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
