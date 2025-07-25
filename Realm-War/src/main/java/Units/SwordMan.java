@@ -9,7 +9,7 @@ public class SwordMan extends Units {
         super(owner, position);
         this.hitPoints = 20;
         this.movementRange = 2;
-        this.attackPower = 3;
+        this.attackPower = 7;
         this.attackRange = 2;
         this.payment = 3;
         this.ration = 2;

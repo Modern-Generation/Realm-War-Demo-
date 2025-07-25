@@ -9,7 +9,7 @@ public class Peasant extends Units {
         super(owner, position);
         this.hitPoints = 10;
         this.movementRange = 2;
-        this.attackPower = 1;
+        this.attackPower = 5;
         this.attackRange = 1;
         this.payment = 1;
         this.ration = 1;

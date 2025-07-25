@@ -9,7 +9,7 @@ public class SpearMan extends Units {
         super(owner, position);
         this.hitPoints = 15;
         this.movementRange = 2;
-        this.attackPower = 2;
+        this.attackPower = 6;
         this.attackRange = 1;
         this.payment = 2;
         this.ration = 1;
