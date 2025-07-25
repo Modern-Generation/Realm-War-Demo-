@@ -65,6 +65,10 @@ public class Grid {
     public void moveUnit(Units unit, Position newPos) {
         if (!isValidPosition(newPos.getX(), newPos.getY()))
             return;
+        Blocks newBlock1 = getBlock(newPos);
+        if (newBlock1 instanceof ForestBlock && ((ForestBlock) newBlock1).hasForest()) {
+            ((ForestBlock) newBlock1).destroyForest();
+        }
         Position oldPos = unit.getPosition();
         Units target = getUnitAt(newPos);
         if (target == null) {

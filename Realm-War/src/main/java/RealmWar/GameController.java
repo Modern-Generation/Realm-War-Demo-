@@ -124,11 +124,10 @@ public class GameController {
                     if (!player.isDefeated()) {
                         int goldBefore = player.getGold();
                         int foodBefore = player.getFood();
-
                         player.collectResources();
+                        int goldGained = player.getGold() - goldBefore;
+                        int foodGained = player.getFood() - foodBefore;
 
-                        int goldGained = player.getGold() + goldBefore;
-                        int foodGained = player.getFood() + foodBefore;
 
                         System.out.println(player.getName() +
                                 " gained " + goldGained + " gold and " +
@@ -357,7 +356,7 @@ public class GameController {
             if (targetStructure instanceof TownHall) {
                 targetStructure.getOwner().setDefeated(true);
                 System.out.println("Town Hall destroyed! " + targetStructure.getOwner().getName() + " has been defeated!");
-                checkPlayerDefeat();
+
 
                 long alivePlayers = players.stream().filter(p -> !p.isDefeated()).count();
                 if (alivePlayers == 1) {

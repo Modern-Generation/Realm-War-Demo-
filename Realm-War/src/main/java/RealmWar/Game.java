@@ -1,6 +1,5 @@
 package RealmWar;
 
-import GUI.GameGUI;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import Utils.RuntimeTypeAdapterFactory;
@@ -184,6 +183,7 @@ public class Game {
         }
         if (activePlayers <= 1) {
             isGameOver = true;
+            isGameOver();
             if (lastPlayer != null)
                 System.out.println("Winner: " + lastPlayer.getName());
             else
@@ -191,8 +191,8 @@ public class Game {
         }
     }
 
-    public boolean isGameOver() {
-        return gc.isGameOver();
+    public void isGameOver() {
+        gc.isGameOver();
     }
 
     public Grid getGrid() {

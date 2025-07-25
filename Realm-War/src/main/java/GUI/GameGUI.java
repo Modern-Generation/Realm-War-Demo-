@@ -181,7 +181,15 @@ public class GameGUI extends JFrame {
         infoUpdateTimer.start();
 
         //GameGUI
+        Font buttonFont = new Font("Arial", Font.BOLD, 14);
+        Color buttonColor = Color.DARK_GRAY;
+        Color textColor = Color.WHITE;
+
         JButton quickSaveBtn = new JButton("Save Game");
+        quickSaveBtn.setPreferredSize(buttonSize);
+        quickSaveBtn.setFont(buttonFont);
+        quickSaveBtn.setBackground(buttonColor);
+        quickSaveBtn.setForeground(textColor);
         quickSaveBtn.addActionListener(e -> {
             try {
                 new File("saves").mkdirs();
@@ -200,8 +208,26 @@ public class GameGUI extends JFrame {
             }
         });
 
+        JButton returnBtn = new JButton("Main Menu");
+
+        returnBtn.setPreferredSize(buttonSize);
+        returnBtn.setFont(buttonFont);
+        returnBtn.setBackground(buttonColor);
+        returnBtn.setForeground(textColor);
+
+        returnBtn.addActionListener(e -> {
+            if (JOptionPane.showConfirmDialog(GameGUI.this,
+                    "Return to main menu? Progress will not be saved.",
+                    "Confirm",
+                    JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                dispose(); // Close current GUI
+                RealmWar.Main.main(null);
+            }
+        });
+
         if (controlPanel != null) {
             controlPanel.add(quickSaveBtn);
+            controlPanel.add(returnBtn);
         } else {
             System.err.println("ERROR: ControlPanel Not Valued");
         }
@@ -342,6 +368,10 @@ public class GameGUI extends JFrame {
     }
 
     public void updateCellsAfterMove(Position oldPos, Position newPos) {
+        Blocks newBlock = game.getGrid().getBlock(newPos);
+        if (newBlock instanceof ForestBlock && ((ForestBlock) newBlock).hasForest()) {
+            ((ForestBlock) newBlock).destroyForest();
+        }
         updateCell(oldPos);
         updateCell(newPos);
         gameBoard.repaint();
@@ -519,6 +549,7 @@ public class GameGUI extends JFrame {
             currentPlayer.addUnit(unit);
             updateGameBoard();
             updateGameInfo();
+            currentPlayer.generateResources();
         } else {
             JOptionPane.showMessageDialog(this,
                     "Not enough resources or unit space!", "Error", JOptionPane.ERROR_MESSAGE);
