@@ -135,41 +135,8 @@ public class Player {
         }
     }
 
-    public int getMaxUnitSpace() {
-        return structures.stream().mapToInt(Structures::getUnitSpace).sum();
-    }
-
-    public int get_M_UnitSpace() {
-        return maxUnitSpace;
-    }
-
-    public void set_M_UnitSpace(int maxUnitSpace) {
-        this.maxUnitSpace = maxUnitSpace;
-    }
-
-    public int getCurrentUsedUnitSpace() {
-        return units.stream().mapToInt(Units::getUnitSpace).sum();
-    }
-
     public void addOwnedBlock(Blocks block) {
         getOwnedBlocks().add(block);
-    }
-
-    public void removeOwnedBlock(Blocks block) {
-        ownedBlocks.remove(block);
-    }
-
-    public boolean toOwnBlock(Blocks block) {
-        if (!block.isOwned()) {
-            block.setOwner(this);
-            ownedBlocks.add(block);
-            return true;
-        }
-        return false;
-    }
-
-    public boolean ownsBlock(Blocks block) {
-        return ownedBlocks.contains(block);
     }
 
     public void removeStructure(Structures structure) {
@@ -232,13 +199,5 @@ public class Player {
 
     public boolean canAfford(int goldCost, int foodCost) {
         return gold >= goldCost && food >= foodCost;
-    }
-
-    public void addGold(int amount) {
-        this.gold += amount;
-    }
-
-    public void addFood(int amount) {
-        this.food += amount;
     }
 }

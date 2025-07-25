@@ -9,7 +9,6 @@ import java.awt.*;
 import java.io.File;
 import java.util.*;
 import java.util.List;
-//import java.util.Timer;
 import java.util.concurrent.*;
 import javax.swing.*;
 import javax.swing.Timer;

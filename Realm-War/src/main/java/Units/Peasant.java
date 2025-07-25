@@ -16,17 +16,6 @@ public class Peasant extends Units {
         this.level = 1;
     }
 
-    public Peasant() {
-        super(null, new Position(0, 0));
-        this.hitPoints = 10;
-        this.movementRange = 2;
-        this.attackPower = 1;
-        this.attackRange = 1;
-        this.payment = 1;
-        this.ration = 1;
-        this.level = 1;
-    }
-
     @Override
     public int getUnitSpace() {
         return 1;

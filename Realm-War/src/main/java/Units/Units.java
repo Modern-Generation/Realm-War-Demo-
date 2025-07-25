@@ -57,20 +57,8 @@ public abstract class Units {
         return ownerId;
     }
 
-    public void setOwnerId(int ownerId) {
-        this.ownerId = ownerId;
-    }
-
     public int getAttackPower() {
         return attackPower;
-    }
-
-    public int getAttackRange() {
-        return attackRange;
-    }
-
-    public int getMovementRange() {
-        return movementRange;
     }
 
     public int getPayment() {
@@ -105,27 +93,10 @@ public abstract class Units {
         return hitPoints > 0;
     }
 
-    public void attack(Units target) {
-        target.takeDamage(this.attackPower);
-    }
-
-    public boolean move(Position target, Grid grid) {
-        int distance = calculateDistance(this.position, target);
-        if (distance <= movementRange && grid.isValidPosition(target.getX(), target.getY())) {
-            this.position = target;
-            return true;
-        }
-        return false;
-    }
-
     public boolean isInRange(Position targetPos) {
         int dx = Math.abs(this.position.getX() - targetPos.getX());
         int dy = Math.abs(this.position.getY() - targetPos.getY());
         return dx + dy <= this.attackRange;
-    }
-
-    public int calculateDistance(Position p1, Position p2) {
-        return Math.abs(p1.getX() - p2.getX()) + Math.abs(p1.getY() - p2.getY());
     }
 
     public abstract int getUnitSpace();

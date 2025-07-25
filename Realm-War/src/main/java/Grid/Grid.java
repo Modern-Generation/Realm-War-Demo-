@@ -9,7 +9,6 @@ import Units.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Grid {
 
@@ -37,7 +36,7 @@ public class Grid {
             System.out.println("You can only set a unit or structure on each block");
             return;
         }
-        // اگر بلاک جنگل بود، جنگل را تخریب کن
+        //If forest block -> Destroy it
         if (block instanceof ForestBlock) {
             ((ForestBlock) block).destroyForest();
             System.out.println("Forest destroyed at: " + pos);
@@ -137,47 +136,6 @@ public class Grid {
         }
     }
 
-    private boolean isStronger(Units unit, Units target) {
-        int unitIsHigher = unit.getHitPoints() + unit.getAttackPower() + unit.getLevel();
-        int targetIsHigher = target.getHitPoints() + target.getAttackPower() + target.getLevel();
-        return unitIsHigher > targetIsHigher;
-    }
-
-    public void attackUnit(Units attacker, Units target) {
-        if(attacker == null || target == null)
-            return;
-
-        if (!attacker.isAlive() || !target.isAlive())
-            return;
-
-        if (attacker.getOwner().equals(target.getOwner()))
-            return;
-
-        if (!attacker.isInRange(target.getPosition())){
-            System.out.println("Target is out of range!");
-            return;
-        }
-        target.takeDamage(attacker.getAttackPower());
-        attacker.takeDamage(target.getAttackPower());
-
-        if(!target.isAlive()) {
-            removeUnit(target);
-            target.getOwner().removeUnit(target);
-            Blocks targetBlock = getBlock(target.getPosition());
-            if (targetBlock != null) {
-                targetBlock.removeUnit();
-            }
-        }
-        if(!attacker.isAlive()) {
-            removeUnit(attacker);
-            attacker.getOwner().removeUnit(attacker);
-            Blocks attackerBlock = getBlock(attacker.getPosition());
-            if (attackerBlock != null) {
-                attackerBlock.removeUnit();
-            }
-        }
-    }
-
     private Units mergeUnits(Units unit, Units target) {
         if (!unit.getClass().equals(target.getClass()))
             return null;
@@ -215,21 +173,6 @@ public class Grid {
         return null;
     }
 
-    public List<Blocks> getAllBlocks() {
-        List<Blocks> allBlocks = new ArrayList<>();
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                allBlocks.add(blocks[x][y]);
-            }
-        }
-        return allBlocks;
-    }
-
-
-    public List<Units> getUnitsOwnedBy(Player player) {
-        return units.stream().filter(u -> u.getOwner().equals(player)).toList();
-    }
-
     public List<Units> getAllUnits() {
         return units;
     }
@@ -262,7 +205,7 @@ public class Grid {
         Collections.shuffle(allPositions);
 
         int totalBlocks = width * height;
-        int forestCount = (int)(totalBlocks * 0.8);
+        int forestCount = (int) (totalBlocks * 0.8);
         int voidCount = totalBlocks / 10;   // about 10% Void block
 
         for (int i = 0; i < allPositions.size(); i++) {
@@ -275,22 +218,6 @@ public class Grid {
                 blocks[pos.getX()][pos.getY()] = new EmptyBlock(pos);
             }
         }
-    }
-
-    public int valueOfGoldPerTurn(Player player) {
-        int gold = 0;
-        for (Blocks block : getBlocksOwnedBy(player)) {
-            gold += block.getGoldPerTurn();
-        }
-        return gold;
-    }
-
-    public int valueOfFoodPerTurn(Player player) {
-        int food = 0;
-        for (Blocks block : getBlocksOwnedBy(player)) {
-            food += block.getFoodPerTurn();
-        }
-        return food;
     }
 
     public List<Position> getAdjacentPositions(Position pos) {

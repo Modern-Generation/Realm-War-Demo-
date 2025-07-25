@@ -8,7 +8,6 @@ import Units.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
 import java.util.List;
 import java.util.Scanner;
 import java.io.File;
@@ -233,34 +232,6 @@ public class GameGUI extends JFrame {
         }
     }
 
-    /*private void initializeGameBoard() {
-        gameBoard.removeAll();
-        Grid grid = game.getGrid();
-
-        for (int y = 0; y < grid.getHeight(); y++) {
-            for (int x = 0; x < grid.getWidth(); x++) {
-                Blocks block = grid.getBlock(x, y);
-                JButton cell = new JButton();
-                cell.setPreferredSize(new Dimension(60, 60));
-                styleCell(cell, block);
-
-                if (block.getUnit() != null) {
-                    cell.setText(block.getUnit().getClass().getSimpleName());
-                } else if (block.getStructure() != null) {
-                    cell.setText(block.getStructure().getClass().getSimpleName());
-                } else {
-                    cell.setText("");
-                }
-
-                final int finalX = x;
-                final int finalY = y;
-                cell.addActionListener(e -> handleCellClick(finalX, finalY));
-
-                gameBoard.add(cell);
-            }
-        }
-    }*/
-
     private void initializeGameBoard() {
         gameBoard.removeAll();
         Grid grid = game.getGrid();
@@ -282,42 +253,6 @@ public class GameGUI extends JFrame {
         gameBoard.revalidate();
         gameBoard.repaint();
     }
-
-    /*private void styleCell(JButton cell, Blocks block) {
-        // Set background color based on block type
-        if (block instanceof EmptyBlock) {
-            cell.setBackground(Color.LIGHT_GRAY);
-        } else if (block instanceof ForestBlock) {
-            cell.setBackground(((ForestBlock) block).hasForest() ?
-                    new Color(34, 139, 34) : new Color(139, 69, 19));
-        } else if (block instanceof VoidBlock) {
-            cell.setBackground(Color.BLACK);
-        }
-
-        // Highlight owned blocks
-        if (block.isOwned()) {
-            Player owner = block.getOwner();
-            if (owner.equals(gameController.getCurrentPlayer())) {
-                cell.setBorder(BorderFactory.createLineBorder(Color.GREEN, 3));
-            } else {
-                cell.setBorder(BorderFactory.createLineBorder(Color.RED, 3));
-            }
-        } else {
-            cell.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
-        }
-
-        // Add structure/unit info
-        StringBuilder text = new StringBuilder();
-        if (block.getStructure() != null) {
-            text.append(block.getStructure().getClass().getSimpleName()).append("\n");
-        }
-        if (block.getUnit() != null) {
-            text.append(block.getUnit().getClass().getSimpleName())
-                    .append(" Lv").append(block.getUnit().getLevel())
-                    .append(" HP").append(block.getUnit().getHitPoints());
-        }
-        cell.setText(text.toString());
-    }*/
 
     private void styleCell(JButton cell, Blocks block) {
         // Set background color based on block type
@@ -342,7 +277,6 @@ public class GameGUI extends JFrame {
             cell.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
         }
 
-        // Clear previous text and icon
         cell.setText("");
         cell.setIcon(null);
 
@@ -390,8 +324,7 @@ public class GameGUI extends JFrame {
 
         if (block.isOwned() && block.getOwner().equals(gameController.getCurrentPlayer())) {
             showBlockActions(block);
-        }
-        else {
+        } else {
 //            JOptionPane.showMessageDialog(this,
 //                    "This block is not yours!", "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -422,9 +355,7 @@ public class GameGUI extends JFrame {
             popupMenu.add(upgradeItem);
         }
 
-        popupMenu.show(gameBoard,
-                selectedPosition.getX() * 60,
-                selectedPosition.getY() * 60);
+        popupMenu.show(gameBoard, selectedPosition.getX() * 60, selectedPosition.getY() * 60);
     }
 
     private void showBuildDialog() {
@@ -659,7 +590,7 @@ public class GameGUI extends JFrame {
                 Structures targetStructure = game.getGrid().getStructure(targetPos);
 
                 if ((targetUnit == null || targetUnit.getOwner().equals(attacker.getOwner()))
-                    && (targetStructure == null || targetStructure.getOwner().equals(attacker.getOwner()))) {
+                        && (targetStructure == null || targetStructure.getOwner().equals(attacker.getOwner()))) {
                     JOptionPane.showMessageDialog(dialog,
                             "No valid enemy target at this position!", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
@@ -689,14 +620,6 @@ public class GameGUI extends JFrame {
                     return;
                 }
 
-//                if (!attacker.isInRange(targetPos)) {
-//                    JOptionPane.showMessageDialog(dialog,
-//                            "Target is out of attack range!", "Error", JOptionPane.ERROR_MESSAGE);
-//                    return;
-//                }
-
-//                gameController.handleAttack(attacker, targetPos);
-
                 updateGameBoard();
                 updateGameInfo();
                 dialog.dispose();
@@ -714,67 +637,6 @@ public class GameGUI extends JFrame {
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
     }
-
-    /*private void showAttackDialog(Units attacker) {
-        JDialog dialog = new JDialog(this, "Attack", true);
-        dialog.setLayout(new BorderLayout());
-
-        JPanel inputPanel = new JPanel(new GridLayout(2, 2));
-        JTextField xField = new JTextField();
-        JTextField yField = new JTextField();
-
-        inputPanel.add(new JLabel("Target X:"));
-        inputPanel.add(xField);
-        inputPanel.add(new JLabel("Target Y:"));
-        inputPanel.add(yField);
-
-        JButton attackBtn = new JButton("Attack");
-        attackBtn.addActionListener(e -> {
-            try {
-                int x = Integer.parseInt(xField.getText());
-                int y = Integer.parseInt(yField.getText());
-                Position targetPos = new Position(x, y);
-
-                if (!game.getGrid().isValidPosition(x, y)) {
-                    JOptionPane.showMessageDialog(dialog,
-                            "Invalid position!", "Error", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
-                Units targetUnit = game.getGrid().getUnitAt(targetPos);
-                Structures targetStructure = game.getGrid().getStructure(targetPos);
-
-                if ((targetUnit == null || targetUnit.getOwner().equals(attacker.getOwner()))
-                        && (targetStructure == null || targetStructure.getOwner().equals(attacker.getOwner()))) {
-                    JOptionPane.showMessageDialog(dialog,
-                            "No valid enemy target at this position!", "Error", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
-                if (!attacker.isInRange(targetPos)) {
-                    JOptionPane.showMessageDialog(dialog,
-                            "Target is out of attack range!", "Error", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
-                gameController.handleAttack(attacker, targetPos);
-
-                updateGameBoard();
-                updateGameInfo();
-                dialog.dispose();
-
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(dialog,
-                        "Please enter valid coordinates!", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        });
-
-        dialog.add(inputPanel, BorderLayout.CENTER);
-        dialog.add(attackBtn, BorderLayout.SOUTH);
-        dialog.pack();
-        dialog.setLocationRelativeTo(this);
-        dialog.setVisible(true);
-    }*/
 
     private void upgradeStructure(Structures structure) {
         Player currentPlayer = gameController.getCurrentPlayer();
@@ -813,12 +675,9 @@ public class GameGUI extends JFrame {
         currentPlayerLabel.setText("Player: " + currentPlayer.getName());
         goldLabel.setText("Gold: " + currentPlayer.getGold());
         foodLabel.setText("Food: " + currentPlayer.getFood());
-//        unitSpaceLabel.setText("Unit Space: " + currentPlayer.getCurrentUsedUnitSpace() +
-//                "/" + currentPlayer.getMaxUnitSpace());
 
         // Highlight current player's blocks
         updateGameBoard();
-
     }
 
     public void updateGameBoard() {
@@ -837,7 +696,7 @@ public class GameGUI extends JFrame {
             Game game = new Game(players, Config.GRID_WIDTH, Config.GRID_HEIGHT);
             GameController gc = new GameController(players, game.getGrid(), new Scanner(System.in));
 
-//            new GameGUI(game, gc);
+            //new GameGUI(game, gc);
             GameGUI gui = new GameGUI(game, gc);
             gui.updateGameBoard();
         });
@@ -858,19 +717,6 @@ public class GameGUI extends JFrame {
         JLabel gainLabel = new JLabel("+" + gold + " Gold, +" + food + " Food");
         gainLabel.setForeground(Color.GREEN);
         gainLabel.setFont(new Font("Arial", Font.BOLD, 14));
-
-        // نمایش موقت پیام
-        // JPanel messagePanel = new JPanel();
-        //messagePanel.add(gainLabel);
-
-        //  JOptionPane optionPane = new JOptionPane(messagePanel, JOptionPane.INFORMATION_MESSAGE);
-        // JDialog dialog = optionPane.createDialog("Resources Gained");
-        //  dialog.setModal(false);
-        //  dialog.setVisible(true);
-
-        //  new Timer(2000, e -> {
-        //   dialog.dispose();
-        //}).start();
     }
 
     public void syncResourcesToPlayers() {

@@ -46,64 +46,6 @@ public class Game {
         initGameBoard();
     }
 
-    public GameController getGc() {
-        return gc;
-    }
-
-
-    public int getRemainingTurnTime() {
-        return remainingTurnTime;
-    }
-
-    /*public void startTurnTimer() {
-        stopTurnTimer();
-        scheduler = Executors.newScheduledThreadPool(2);
-
-        // تایمر نوبت بازی
-        turnTask = scheduler.scheduleAtFixedRate(() -> {
-            remainingTurnTime--;
-            if (remainingTurnTime <= 0) {
-                nextPlayerTurn();
-                remainingTurnTime = 30; // ریست تایمر برای بازیکن بعدی
-            }
-        }, 1, 1, TimeUnit.SECONDS);
-
-        // تایمر جمع‌آوری منابع
-        resourcesTask = scheduler.scheduleAtFixedRate(() -> {
-            for (Player p : players) {
-                if (!p.isDefeated()) {
-                    int goldGain = grid.valueOfGoldPerTurn(p);
-                    int foodGain = grid.valueOfFoodPerTurn(p);
-                    p.addGold(goldGain);
-                    p.addFood(foodGain);
-                    System.out.println(p.getName() + " gained " + goldGain + " gold and " + foodGain + " food");
-
-                    if (gc.getGui() != null) {
-                        gc.getGui().showResourceGain(goldGain, foodGain);
-                    }
-                }
-            }
-        }, 0, 3, TimeUnit.SECONDS);
-    }*/
-
-   /* public int getRemainingTurnTime() {
-        if (turnStartTime == 0) return TURN_DURATION;
-        long elapsed = System.currentTimeMillis() - turnStartTime;
-        return Math.max(0, TURN_DURATION - (int)(elapsed / 1000));
-    }*/
-
-//    public void stopTurnTimer() {
-//        if (turnTask != null) {
-//            turnTask.cancel(true);
-//        }
-//        if (resourcesTask != null) {
-//            resourcesTask.cancel(true);
-//        }
-//        if (scheduler != null) {
-//            scheduler.shutdownNow();
-//        }
-//    }
-
     private void initGameBoard() {
         int playerCount = players.size();
         List<Position> startingPositions = generateStartingPositions(playerCount);
@@ -111,16 +53,6 @@ public class Game {
         for (int i = 0; i < playerCount; i++) {
             Player player = players.get(i);
             Position startingPos = startingPositions.get(i);
-
-            //Create & Place TownHall
-//            TownHall townHall = new TownHall(player);
-//            grid.setStructure(startingPos, townHall);
-//            player.addStructure(townHall);
-
-            //Own the Block
-//            Blocks startingBlock = grid.getBlock(startingPos);
-//            startingBlock.setOwner(player);
-//            player.addOwnedBlock(startingBlock);
 
             //Own surrounding blocks
             for (Position p : grid.getAdjacentPositions(startingPos)) {
@@ -149,27 +81,6 @@ public class Game {
         if (isGameOver || players.isEmpty())
             return null;
         return gc.getCurrentPlayer();
-    }
-
-    public void nextPlayerTurn() {
-        turnStartTime = System.currentTimeMillis();
-
-        int attempts = 0;
-        do {
-            nowPlayerIndex = (nowPlayerIndex + 1) % players.size();
-            attempts++;
-            if (attempts > players.size()) {
-                isGameOver = true;
-                System.out.println("No more players left. Game over!");
-                gc.stopTimers();
-                return;
-            }
-        } while (players.get(nowPlayerIndex).isDefeated());
-
-        Player currentPlayer = getCurrentPlayer();
-        currentPlayer.startTurn();
-        System.out.println("It's " + currentPlayer.getName() + "'s turn!");
-        checkVictoryCondition();
     }
 
     private void checkVictoryCondition() {
@@ -241,7 +152,6 @@ public class Game {
 
             for (Player player : players) {
                 player.generateResources();
-//                player.payMaintenance();
             }
 
             JsonElement playersJson = gson.toJsonTree(players);
@@ -290,20 +200,6 @@ public class Game {
         }
     }
 
-    // --- Restart the game to initial state ---
-//    public void restartGame() {
-//        List<Player> resetPlayers = new ArrayList<>();
-//        for (Player player : players) {
-//            resetPlayers.add(new Player(player.getName(), player.getId()));
-//        }
-//        this.players = resetPlayers;
-//        this.grid = new Grid(grid.getWidth(), grid.getHeight());
-//        this.nowPlayerIndex = 0;
-//        this.isGameOver = false;
-//        initGameBoard();
-//        System.out.println("Game restarted.");
-//    }
-
     public int getCurrentPlayerIndex() {
         return this.nowPlayerIndex;
     }
@@ -334,20 +230,6 @@ public class Game {
                         owner.getUnits().add(unit);
                     }
                 }
-//                else {
-//                    Units unit = block.getUnit();
-//                    if (unit != null && unit.getOwner() != null) {
-//                        block.setOwner(unit.getOwner());
-//                        unit.getOwner().addOwnedBlock(block);
-//                        unit.getOwner().getUnits().add(unit);
-//                    }
-//                    Structures structure = block.getStructure();
-//                    if (structure != null && structure.getOwner() != null) {
-//                        block.setOwner((structure.getOwner()));
-//                        structure.getOwner().addOwnedBlock(block);
-//                        structure.getOwner().getStructures().add(structure);
-//                    }
-//                }
             }
         }
 
