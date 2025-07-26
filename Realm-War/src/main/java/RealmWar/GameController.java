@@ -7,7 +7,6 @@ import Structures.TownHall;
 import Units.*;
 import Units.*;
 import Blocks.*;
-
 import javax.swing.*;
 import java.util.*;
 import java.util.concurrent.Executors;
@@ -207,7 +206,6 @@ public class GameController {
                 targetStructure.getOwner().setDefeated(true);
                 System.out.println("Town Hall destroyed! " + targetStructure.getOwner().getName() + " has been defeated!");
 
-
                 long alivePlayers = players.stream().filter(p -> !p.isDefeated()).count();
                 if (alivePlayers == 1) {
                     Player winner = players.stream().filter(p -> !p.isDefeated()).findFirst().get();
@@ -229,16 +227,8 @@ public class GameController {
         return players.stream().filter(p -> !p.isDefeated()).count() <= 1;
     }
 
-    public Player getWinner() {
-        return players.stream().filter(p -> !p.isDefeated()).findFirst().orElse(null);
-    }
-
     public void setGui(GameGUI gui) {
         this.gui = gui;
-    }
-
-    public GameGUI getGui() {
-        return gui;
     }
 
     public int getRemainingTurnTime() {

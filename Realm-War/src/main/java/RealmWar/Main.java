@@ -1,15 +1,10 @@
 package RealmWar;
 
 import GUI.GameGUI;
-import Grid.*;
-import Structures.*;
-import Units.*;
-
 import java.awt.*;
 import java.io.File;
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.*;
 import javax.swing.*;
 import javax.swing.Timer;
 
@@ -123,32 +118,6 @@ public class Main {
         showInGameMenu();
     }
 
-    private static void loadGame() {
-        try {
-            currentGame = new Game(new ArrayList<>(), Config.GRID_WIDTH, Config.GRID_HEIGHT);
-            currentGame = currentGame.loadGame("saves/quicksave.json");
-
-            currentGameController = new GameController(
-                    currentGame.getPlayers(),
-                    currentGame.getGrid(),
-                    new Scanner(System.in));
-            currentGameController.setCurrentPlayerIndex(currentGame.getCurrentPlayerIndex());
-
-            JOptionPane.showMessageDialog(null,
-                    "Game loaded successfully!",
-                    "Load Game",
-                    JOptionPane.INFORMATION_MESSAGE);
-
-            showInGameMenu();
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null,
-                    "Error loading game: " + ex.getMessage(),
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
-            showMainMenu();
-        }
-    }
-
     private static void showInGameMenu() {
         GameGUI gui = new GameGUI(currentGame, currentGameController);
         currentGameController.setGui(gui);
@@ -207,5 +176,31 @@ public class Main {
 
         // Start game timer
         currentGameController.startTimers();
+    }
+
+    private static void loadGame() {
+        try {
+            currentGame = new Game(new ArrayList<>(), Config.GRID_WIDTH, Config.GRID_HEIGHT);
+            currentGame = currentGame.loadGame("saves/quicksave.json");
+
+            currentGameController = new GameController(
+                    currentGame.getPlayers(),
+                    currentGame.getGrid(),
+                    new Scanner(System.in));
+            currentGameController.setCurrentPlayerIndex(currentGame.getCurrentPlayerIndex());
+
+            JOptionPane.showMessageDialog(null,
+                    "Game loaded successfully!",
+                    "Load Game",
+                    JOptionPane.INFORMATION_MESSAGE);
+
+            showInGameMenu();
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null,
+                    "Error loading game: " + ex.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            showMainMenu();
+        }
     }
 }

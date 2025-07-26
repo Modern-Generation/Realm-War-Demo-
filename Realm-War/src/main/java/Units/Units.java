@@ -1,6 +1,5 @@
 package Units;
 
-import Grid.Grid;
 import Grid.Position;
 import RealmWar.Player;
 

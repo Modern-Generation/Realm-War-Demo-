@@ -5,7 +5,6 @@ import Grid.*;
 import RealmWar.*;
 import Structures.*;
 import Units.*;
-
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
@@ -31,7 +30,6 @@ public class GameGUI extends JFrame {
     private JButton attackButton;
     private JButton upgradeStructureButton;
     private Position selectedPosition;
-    private JDialog actionDialog;
     private GameController gc;
     private Timer guiTimer;
 

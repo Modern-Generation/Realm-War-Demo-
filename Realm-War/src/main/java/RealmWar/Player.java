@@ -4,7 +4,6 @@ import Structures.Structures;
 import Structures.TownHall;
 import Units.Units;
 import Blocks.*;
-
 import java.util.*;
 
 public class Player {

@@ -77,35 +77,6 @@ public class Game {
         return positions;
     }
 
-    public Player getCurrentPlayer() {
-        if (isGameOver || players.isEmpty())
-            return null;
-        return gc.getCurrentPlayer();
-    }
-
-    private void checkVictoryCondition() {
-        int activePlayers = 0;
-        Player lastPlayer = null;
-        for (Player player : players) {
-            if (!player.isDefeated()) {
-                activePlayers++;
-                lastPlayer = player;
-            }
-        }
-        if (activePlayers <= 1) {
-            isGameOver = true;
-            isGameOver();
-            if (lastPlayer != null)
-                System.out.println("Winner: " + lastPlayer.getName());
-            else
-                System.out.println("Game Over! No Winner!");
-        }
-    }
-
-    public void isGameOver() {
-        gc.isGameOver();
-    }
-
     public Grid getGrid() {
         return grid;
     }

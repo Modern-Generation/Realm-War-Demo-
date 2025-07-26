@@ -181,19 +181,6 @@ public class Grid {
         return getBlock(position.getX(), position.getY());
     }
 
-    public List<Blocks> getBlocksOwnedBy(Player player) {
-        List<Blocks> blocksOwnedBy = new ArrayList<>();
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                Blocks block = blocks[x][y];
-                if (block.getOwner() != null && block.getOwner().equals(player)) {
-                    blocksOwnedBy.add(block);
-                }
-            }
-        }
-        return blocksOwnedBy;
-    }
-
     public void randomizeBlocks() {
         List<Position> allPositions = new ArrayList<>();
         for (int x = 0; x < width; x++) {

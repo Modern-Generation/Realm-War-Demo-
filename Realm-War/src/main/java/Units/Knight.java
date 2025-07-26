@@ -7,7 +7,7 @@ public class Knight extends Units {
 
     public Knight(Player owner, Position position) {
         super(owner, position);
-        this.hitPoints = 30;
+        this.hitPoints = 35;
         this.movementRange = 3;
         this.attackPower = 10;
         this.attackRange = 3;
