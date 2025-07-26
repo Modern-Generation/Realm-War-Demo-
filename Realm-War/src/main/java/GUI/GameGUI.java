@@ -12,7 +12,6 @@ import java.util.Scanner;
 import java.io.File;
 import javax.swing.JOptionPane;
 
-
 public class GameGUI extends JFrame {
     private final JPanel controlPanel;
     private Game game;
