@@ -33,4 +33,9 @@ public class Tower extends Structures {
     public int levelUpCost() {
         return 5 * currentLevel;
     }
+
+    @Override
+    public int getExtraUnitSpacePerTurn() {
+        return 0;
+    }
 }

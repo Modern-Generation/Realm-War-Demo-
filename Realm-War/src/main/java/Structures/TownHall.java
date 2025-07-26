@@ -34,4 +34,9 @@ public class TownHall extends Structures {
     public int levelUpCost() {
         return 0;
     }
+
+    @Override
+    public int getExtraUnitSpacePerTurn() {
+        return 0;
+    }
 }

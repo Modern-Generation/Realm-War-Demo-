@@ -54,6 +54,8 @@ public abstract class Structures {
 
     public abstract int levelUpCost();
 
+    public abstract int getExtraUnitSpacePerTurn();
+
     public int getDurability() {
         return durability;
     }

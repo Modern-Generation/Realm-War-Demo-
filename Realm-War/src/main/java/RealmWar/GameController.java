@@ -174,7 +174,7 @@ public class GameController {
         }
     }
 
-    public void handleStructureAttack(Units attacker, Structures targetStructure) {
+    /*public void handleStructureAttack(Units attacker, Structures targetStructure) {
         if (attacker == null || targetStructure == null) {
             return;
         }
@@ -215,6 +215,81 @@ public class GameController {
                     System.exit(0);
                 }
             }
+        }
+    }*/
+
+    public void handleStructureAttack(Units attacker, Structures targetStructure) {
+        if (attacker == null || targetStructure == null) {
+            JOptionPane.showMessageDialog(null,
+                    "Invalid attacker or target structure!",
+                    "Attack Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        targetStructure.takeDamage(attacker.getAttackPower());
+        attacker.takeDamage(targetStructure.getDurability());
+
+        StringBuilder message = new StringBuilder();
+        message.append(attacker.getClass().getSimpleName())
+                .append(" attacked ")
+                .append(targetStructure.getClass().getSimpleName())
+                .append("\n");
+
+        message.append("Structure HP left: ").append(targetStructure.getDurability()).append("\n");
+        message.append("Attacker HP left: ").append(attacker.getHitPoints());
+
+        JOptionPane.showMessageDialog(null, message.toString(), "Attack Result", JOptionPane.INFORMATION_MESSAGE);
+
+        if (!attacker.isAlive()) {
+            grid.removeUnit(attacker);
+            attacker.getOwner().removeUnit(attacker);
+            JOptionPane.showMessageDialog(null,
+                    "Attacker unit destroyed!",
+                    "Unit Death",
+                    JOptionPane.WARNING_MESSAGE);
+        }
+
+        if (!targetStructure.isAlive()) {
+            Position structurePos = targetStructure.getOwner().getOwnedBlocks().stream()
+                    .filter(b -> b.getStructure() == targetStructure)
+                    .map(b -> b.getPosition())
+                    .findFirst()
+                    .orElse(null);
+
+            if (structurePos != null) {
+                grid.destroyStructure(structurePos);
+            }
+
+            targetStructure.getOwner().removeStructure(targetStructure);
+
+            if (targetStructure instanceof TownHall) {
+                targetStructure.getOwner().setDefeated(true);
+                JOptionPane.showMessageDialog(null,
+                        "Town Hall destroyed!\n" + targetStructure.getOwner().getName() + " has been defeated!",
+                        "Defeat",
+                        JOptionPane.WARNING_MESSAGE);
+
+                long alivePlayers = players.stream().filter(p -> !p.isDefeated()).count();
+                if (alivePlayers == 1) {
+                    Player winner = players.stream().filter(p -> !p.isDefeated()).findFirst().get();
+                    JOptionPane.showMessageDialog(null,
+                            "Congratulations, " + winner.getName() + " has won the game!",
+                            "Victory",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    System.exit(0);
+                }
+            } else {
+                JOptionPane.showMessageDialog(null,
+                        "Structure destroyed!",
+                        "Structure",
+                        JOptionPane.INFORMATION_MESSAGE);
+            }
+        }
+
+        if (gui != null) {
+            gui.refresh();
+            gui.updateGameBoard();
         }
     }
 

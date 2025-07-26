@@ -251,7 +251,7 @@ public class GameGUI extends JFrame {
         gameBoard.repaint();
     }
 
-    private void styleCell(JButton cell, Blocks block) {
+    /*private void styleCell(JButton cell, Blocks block) {
         // Set background color based on block type
         if (block instanceof EmptyBlock) {
             cell.setBackground(Color.LIGHT_GRAY);
@@ -293,6 +293,54 @@ public class GameGUI extends JFrame {
 
         text.append("</html>");
 
+        cell.setText(text.toString());
+        cell.setHorizontalTextPosition(JButton.CENTER);
+        cell.setVerticalTextPosition(JButton.CENTER);
+    }*/
+
+    private void styleCell(JButton cell, Blocks block) {
+        // Set background color based on block type
+        if (block instanceof EmptyBlock) {
+            cell.setBackground(Color.LIGHT_GRAY);
+        } else if (block instanceof ForestBlock) {
+            cell.setBackground(((ForestBlock) block).hasForest() ?
+                    new Color(34, 139, 34) : new Color(139, 69, 19));
+        } else if (block instanceof VoidBlock) {
+            cell.setBackground(Color.BLACK);
+        }
+
+        // Highlight owned blocks
+        if (block.isOwned()) {
+            Player owner = block.getOwner();
+            if (owner.equals(gameController.getCurrentPlayer())) {
+                cell.setBorder(BorderFactory.createLineBorder(Color.GREEN, 3));
+            } else {
+                cell.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+            }
+        } else {
+            cell.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+        }
+
+        // Show structure and unit info
+        StringBuilder text = new StringBuilder("<html>");
+
+        if (block.getStructure() != null) {
+            Structures structure = block.getStructure();
+            text.append(structure.getClass().getSimpleName())
+                    .append(" Lv").append(structure.getCurrentLevel())
+                    .append(" HP: ").append(structure.getDurability())
+                    .append("<br>");
+        }
+
+        if (block.getUnit() != null) {
+            Units unit = block.getUnit();
+            text.append(unit.getClass().getSimpleName())
+                    .append(" Lv").append(unit.getLevel())
+                    .append(" HP").append(unit.getHitPoints())
+                    .append("<br>");
+        }
+
+        text.append("</html>");
         cell.setText(text.toString());
         cell.setHorizontalTextPosition(JButton.CENTER);
         cell.setVerticalTextPosition(JButton.CENTER);

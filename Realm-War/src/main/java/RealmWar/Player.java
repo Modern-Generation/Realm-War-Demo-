@@ -170,6 +170,7 @@ public class Player {
         for (Structures structure : structures) {
             gold += structure.getGoldPerTurn();
             food += structure.getFoodPerTurn();
+            maxUnitSpace += structure.getExtraUnitSpacePerTurn();
         }
         if (gold < 0) gold = 0;
         if (food < 0) food = 0;
